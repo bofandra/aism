@@ -18,3 +18,28 @@ test("the scientific disclaimer is visible without JavaScript",()=>{
   assert.match(html,/DATA SINTETIS/);
   assert.match(html,/Scientific honesty by design/);
 });
+
+test("responsive UI includes mobile cards and semantic inspector controls",()=>{
+  const mobile=readFileSync(new URL("../mobile.css",import.meta.url),"utf8");
+  assert.match(html,/href="\.\/mobile\.css"/);
+  assert.match(html,/id="inspector-close"/);
+  assert.match(html,/id="inspector-backdrop"/);
+  assert.match(html,/id="mobile-step-progress"/);
+  assert.match(ui,/variable-cards/);
+  assert.match(ui,/class="chart-scroll"/);
+  assert.match(mobile,/max-width:850px/);
+  assert.match(mobile,/max-width:580px/);
+  assert.match(mobile,/max-width:360px/);
+  assert.match(mobile,/\.inspector\.mobile-open/);
+  assert.match(mobile,/\.variable-table\{display:none\}/);
+});
+test("mobile interaction guards include focus, reset/undo and draft persistence",()=>{
+  assert.match(ui,/function closeInspector\(/);
+  assert.match(ui,/e\.key==="Escape"/);
+  assert.match(ui,/e\.key!=="Tab"/);
+  assert.match(ui,/window\.confirm\(/);
+  assert.match(ui,/undo-reset/);
+  assert.match(ui,/function persistDraft\(/);
+  assert.match(ui,/localStorage\.setItem/);
+  assert.match(ui,/prefers-reduced-motion/);
+});
