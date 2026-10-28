@@ -1,0 +1,100 @@
+/* AISM Lab v0.2.1 — mobile-first usability layer; core simulation untouched */
+.mobile-start,.mobile-step-progress,.variable-cards,.inspector-close,.inspector-backdrop{display:none}
+.mobile-start{width:max-content;margin-top:17px}
+.variable-cards{gap:11px}
+.variable-card{border:1px solid #dde8ec;background:#fff;padding:15px;border-radius:12px;min-width:0}
+.variable-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.variable-card-head h3{font-size:14px;line-height:1.4;margin:6px 0 4px;color:#243b51}
+.variable-card-head .code-tag{font-size:11px}
+.variable-card-sub{font-size:11px;color:#758898;line-height:1.5}
+.variable-card-values{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:14px}
+.variable-card-values .value-input{width:min(100%,158px);min-height:44px;font-size:16px}
+.variable-card .row-actions{margin-top:13px;align-items:center;justify-content:space-between}
+.variable-card .badge{font-size:10px}
+.chart-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
+.chart-scroll svg{display:block}
+.chart-hint{display:none;font-size:11px;color:#73879b;margin:7px 0 0}
+.inspector-backdrop{border:0}
+.inspector-close{border:1px solid #dce7ea;border-radius:8px;padding:8px 12px;background:#f4f9f9;color:#236a64;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.draft-info{font-size:11px;color:#69887e;line-height:1.5}
+#alerts:empty{display:none}
+#alerts .alert{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#alerts .alert .mini-btn{min-width:95px}
+@media(max-width:850px){
+  .shell{width:calc(100% - 30px)}
+  .intro{padding:29px 0 31px}
+  .intro h1{font-size:clamp(28px,7vw,40px)}
+  .intro-metrics{margin-top:17px}
+  .mobile-start{display:inline-flex;min-height:44px;font-size:13px}
+  .lab-section{padding-top:21px}
+  .lab-layout{grid-template-columns:minmax(0,1fr)}
+  .main-panel,.stepper{min-width:0}
+  .stepper{padding:13px 11px}
+  .mobile-step-progress{display:block;font-size:12px;font-weight:800;color:#167a71;padding:2px 8px 10px}
+  .steps{scroll-snap-type:x proximity;scroll-padding-inline:12px;scrollbar-width:thin;gap:5px}
+  .steps button{min-height:48px;scroll-snap-align:center}
+  .inspector{display:none}
+  .inspector.mobile-open{display:block;position:fixed;z-index:1002;left:0;right:0;bottom:0;top:auto;width:100%;max-height:min(86dvh,850px);max-height:min(86vh,850px);overflow-y:auto;overscroll-behavior:contain;border-radius:20px 20px 0 0;border:1px solid #cbdedc;box-shadow:0 -14px 60px rgba(8,30,45,.32);padding:22px 22px calc(24px + env(safe-area-inset-bottom));grid-column:auto}
+  @supports(height:100dvh){.inspector.mobile-open{max-height:86dvh}}
+  .inspector-backdrop.mobile-open{display:block;position:fixed;z-index:1001;inset:0;background:rgba(7,23,37,.59);width:100%;height:100%;cursor:pointer}
+  .inspector-close{display:inline-flex;float:right;min-height:44px;min-width:86px;justify-content:center}
+  .inspector-head{min-height:90px}
+  body.sheet-open{overflow:hidden}
+  .inspector .field{margin-bottom:18px}
+  .inspector .inspection-value,.inspector p{font-size:13px}
+  .inspector .inspection-label{font-size:11px}
+  .steps button{min-width:128px}
+  .variable-table{display:none}
+  .variable-cards{display:grid}
+  .variable-card .mini-btn,.variable-card .value-input{min-height:44px}
+  .chart-scroll svg{width:720px!important;min-width:720px;max-width:none;height:auto}
+  .chart-hint{display:block}
+  .chart-card{padding:12px}
+  .chart-card .legend{gap:10px;font-size:12px}
+  .chart-card .box-title{align-items:flex-start;flex-wrap:wrap}
+  .stage-nav{gap:10px;position:sticky;bottom:0;z-index:5;background:#fff;padding:14px 0 calc(12px + env(safe-area-inset-bottom));box-shadow:0 -10px 16px rgba(255,255,255,.92)}
+  .btn,.mini-btn,.segmented button,.steps button,.toolbar-actions button{min-height:44px}
+  .mini-btn{padding:10px 12px;font-size:12px}
+  .btn{font-size:12px}
+  .text-field,.value-input,.formula-card .formula-input{font-size:16px;min-height:44px}
+  .formula-card code{font-size:13px;line-height:1.75;white-space:normal}
+  .formula-card .formula-input{width:100%;min-height:77px;resize:vertical;line-height:1.5;overflow-wrap:anywhere}
+  .edge-card,.formula-card,.intervention-card{padding:15px}
+  .formula-card .card-top{align-items:flex-start;flex-wrap:wrap}
+  .code-tag{font-size:11px;overflow-wrap:anywhere;max-width:100%}
+  .lineage-item{flex-wrap:wrap}
+  .lineage-item span:last-child{margin-left:0}
+  .data-table th,.data-table td{font-size:12px;padding:12px}
+  .data-table th{white-space:nowrap}
+  .table-wrap:not(.variable-table){overflow-x:auto;scrollbar-width:thin;max-width:100%}
+  .step-summary{line-height:1.6}
+}
+@media(max-width:580px){
+  .shell{width:calc(100% - 24px)}
+  .intro h1{font-size:32px;line-height:1.15}
+  .intro p{line-height:1.65}
+  .intro-metrics{gap:0;padding:15px 8px}
+  .intro-metrics div{min-width:0}
+  .intro-metrics strong{font-size:22px}
+  .intro-metrics span{font-size:8px;letter-spacing:0}
+  .intro-metrics div:not(:last-child){padding-right:10px}
+  .question-strip{padding:14px 15px;gap:8px}
+  .question-strip strong{font-size:13px;flex-basis:100%;line-height:1.5}
+  .main-panel{padding:18px 15px}
+  .workspace-head{padding-bottom:15px}
+  .workspace-head h2{font-size:20px}
+  .box-title{flex-wrap:wrap;align-items:flex-start}
+  .stage-nav .btn{flex:1;white-space:normal;text-align:center}
+  .toolbar-actions .btn{flex:1 1 0}
+  .scenario-grid{grid-template-columns:minmax(0,1fr)}
+  .scenario .value{font-size:27px}
+  .side-promo{display:none}
+}
+@media(max-width:360px){
+  .intro h1{font-size:28px}
+  .intro-metrics span{font-size:7px}
+  .version{padding:6px;font-size:8px}
+  .head-inner{gap:8px}
+  .variable-card-values .value-input{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.steps{scroll-behavior:auto}}
