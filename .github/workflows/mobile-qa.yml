@@ -1,0 +1,39 @@
+name: AISM Mobile Browser QA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aism-mobile-qa
+  cancel-in-progress: true
+
+jobs:
+  mobile-browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright and headless Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser QA on 320, 360, 390, 430, 768 and 1280px
+        run: node tests/mobile-smoke.mjs
+      - name: Upload viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aism-mobile-viewport-screenshots
+          path: tests/screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
