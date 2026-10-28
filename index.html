@@ -7,6 +7,7 @@
   <meta name="description" content="AISM Lab v0.2: bangun variabel, hipotesis mekanisme, persamaan dan simulasi intervensi secara transparan.">
   <title>AISM Lab v0.2 — Method Construction & Simulation</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./mobile.css">
 </head>
 <body>
   <div class="notice"><span class="live-dot"></span> RESEARCH DEMONSTRATOR <span class="notice-right">DATA SINTETIS · MODEL BELUM TERVALIDASI</span></div>
@@ -14,12 +15,12 @@
     <div class="shell head-inner">
       <a class="identity" href="./"><span class="mark">A<span>.</span></span><span class="brand-copy"><strong>AISM Lab</strong><small>ADAPTIVE INTERVENTION SELECTION METHOD</small></span></a>
       <nav class="head-nav"><a href="#builder">Model Builder</a><a href="#method">Metodologi</a><a href="https://github.com/bofandra/aism" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
-      <span class="version">v0.2 · HYBRID</span>
+      <span class="version">v0.2.1 · MOBILE</span>
     </div>
   </header>
   <main>
     <section class="intro shell">
-      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, rumus dan hipotesis mekanisme; bandingkan intervensi; telusuri dari mana setiap angka berasal. Satu metode, beberapa domain permasalahan.</p></div>
+      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, rumus dan hipotesis mekanisme; bandingkan intervensi; telusuri dari mana setiap angka berasal. Satu metode, beberapa domain permasalahan.</p><a class="btn btn-primary mobile-start" href="#builder">Mulai simulasi →</a></div>
       <div class="intro-metrics"><div><strong>07</strong><span>TAHAP METODE</span></div><div><strong>03</strong><span>DOMAIN CONTOH</span></div><div><strong>01</strong><span>MESIN MODEL</span></div></div>
     </section>
     <section class="lab-section" id="builder">
@@ -35,6 +36,7 @@
             <span class="section-kicker">WORKFLOW / v0.2</span>
             <h2>Bangun model</h2>
             <p>Ikuti proses dari variabel sampai model yang dapat dihitung.</p>
+            <div class="mobile-step-progress" id="mobile-step-progress" aria-live="polite">Tahap 1 dari 5</div>
             <div class="steps">
               <button type="button" data-step="variables" class="active"><span>01</span><span><strong>Variabel</strong><small>Apa yang diukur?</small></span></button>
               <button type="button" data-step="mechanisms"><span>02</span><span><strong>Mekanisme</strong><small>Bagaimana saling terkait?</small></span></button>
@@ -49,8 +51,9 @@
             <div id="work-area"></div>
             <div class="stage-nav"><button id="prev" class="btn btn-outline" type="button">← Sebelumnya</button><button id="next" class="btn btn-primary" type="button">Lanjutkan →</button></div>
           </section>
-          <aside class="inspector panel" aria-label="Penjelasan metodologis">
-            <div class="inspector-head"><span class="section-kicker">METHOD INSPECTOR</span><h2>Explain This Model <span>✳</span></h2><p>Klik suatu variabel, hubungan atau rumus untuk menelusuri dasarnya.</p></div>
+          <button type="button" id="inspector-backdrop" class="inspector-backdrop" aria-label="Tutup panel penjelasan" tabindex="-1"></button>
+          <aside class="inspector panel" id="inspector" aria-label="Penjelasan metodologis" tabindex="-1">
+            <div class="inspector-head"><button type="button" id="inspector-close" class="inspector-close" aria-label="Tutup penjelasan">✕ <span>Tutup</span></button><span class="section-kicker">METHOD INSPECTOR</span><h2 id="inspector-heading">Explain This Model <span>✳</span></h2><p>Klik suatu variabel, hubungan atau rumus untuk menelusuri dasarnya.</p></div>
             <div id="inspector-body"></div>
           </aside>
         </div>
@@ -68,7 +71,7 @@
       </div>
     </section>
   </main>
-  <footer><div class="shell"><strong>AISM Lab v0.2</strong><span>Design Science Research · Systems Thinking · Synthetic-only prototype · 2026</span><span>© Research demonstrator · No patient data</span></div></footer>
+  <footer><div class="shell"><strong>AISM Lab v0.2.1</strong><span>Design Science Research · Systems Thinking · Synthetic-only prototype · 2026</span><span>© Research demonstrator · No patient data</span></div></footer>
   <script type="module" src="./src/ui.mjs"></script>
 </body>
 </html>
