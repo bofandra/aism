@@ -117,7 +117,7 @@ export function validateModel(model){
     if(inter.source==="synthetic")issues.push(issue("WARN","SYNTHETIC_EFFECT","Efek intervensi masih asumsi demonstrasi",inter.id));
   }
   for(const edge of model.edges||[]){
-    if(!seen.has(edge.from)||!seen.has(edge.to))issues.push(issue("WARN","EDGE_REF","Hubungan merujuk variabel/rumus yang tidak terdaftar",edge.id));
+    if((!seen.has(edge.from)&&edge.from!==model.outcome?.id)||(!seen.has(edge.to)&&edge.to!==model.outcome?.id))issues.push(issue("WARN","EDGE_REF","Hubungan merujuk variabel/rumus yang tidak terdaftar",edge.id));
     if(!edge.why)issues.push(issue("WARN","EDGE_EVIDENCE","Justifikasi hubungan belum terisi",edge.id));
   }
   return issues;
