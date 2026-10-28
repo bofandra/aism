@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1729">
+  <meta name="description" content="AISM Lab: demonstrator konseptual pemilihan intervensi peningkatan kelengkapan data diagnostik SATUSEHAT berbasis bukti dan mekanisme sosio-teknis.">
+  <title>AISM Lab | Adaptive Intervention Selection Method</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="topline"><span class="tiny-dot"></span> PROTOTIPE PENELITIAN v0.1 <span class="topline-right">Data sintetis · Belum tervalidasi</span></div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#awal" aria-label="AISM Lab beranda"><span class="brand-icon">A<span class="brand-dot">.</span></span><span><strong>AISM Lab</strong><small>Systems Thinking × DSR</small></span></a>
+      <nav aria-label="Navigasi utama"><a href="#simulator">Simulator</a><a href="#metodologi">Metodologi</a><a href="#evaluasi">Evaluasi</a></nav>
+      <span class="header-tag">DEMO / 2026</span>
+    </div>
+  </header>
+  <main id="awal">
+    <section class="hero container">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="tiny-dot green"></span> INTERACTIVE RESEARCH DEMONSTRATOR</p>
+        <h1>Dari <em>bukti masalah</em> ke <em>pilihan intervensi</em> yang dapat diuji.</h1>
+        <p class="lead">Simulasi cara <strong>Adaptive Intervention Selection Method (AISM)</strong> membantu rumah sakit memilih tindakan perbaikan kelengkapan data diagnostik FHIR—dengan diagnosis mekanisme, pemeriksaan bukti, persetujuan manusia, dan verifikasi hasil.</p>
+        <div class="hero-actions"><a class="btn primary" href="#simulator">Mulai simulasi <span aria-hidden="true">↗</span></a><a class="btn ghost" href="#metodologi">Lihat aturan keputusan</a></div>
+      </div>
+      <div class="hero-diagram" aria-label="Alur konsep AISM">
+        <div class="diagram-label">CARA KERJA AISM</div>
+        <div class="diagram-node"><span class="node-index">01</span><span><strong>Evidence</strong><small>Episode FHIR &amp; proses koreksi</small></span><span class="node-icon">◈</span></div>
+        <div class="diagram-link">↓</div>
+        <div class="diagram-node"><span class="node-index">02</span><span><strong>Mechanism</strong><small>Mengapa tidak lengkap?</small></span><span class="node-icon">⌁</span></div>
+        <div class="diagram-link">↓</div>
+        <div class="diagram-node accent"><span class="node-index">03</span><span><strong>Intervention</strong><small>Pilih tindakan &amp; PIC</small></span><span class="node-icon">✳</span></div>
+        <div class="diagram-link">↓</div>
+        <div class="diagram-node"><span class="node-index">04</span><span><strong>Verification</strong><small>Ukur, tutup, pelajari</small></span><span class="node-icon">✓</span></div>
+        <div class="diagram-foot">VISIBILITY → OWNERSHIP → CORRECTION → LEARNING ↺</div>
+      </div>
+    </section>
+
+    <section class="workspace" id="simulator">
+      <div class="container">
+        <div class="section-head"><div><p class="eyebrow dark">01 / SIMULASI</p><h2>Uji cara AISM mengambil keputusan</h2><p>Ubah situasi rumah sakit. Amati bagaimana kualitas bukti dan faktor sosio-teknis mengubah rekomendasi.</p></div><div class="pill info">● Semua angka adalah ilustrasi</div></div>
+        <div class="presets"><span class="preset-label">Contoh kasus</span><button class="preset active" data-preset="backlog" type="button">Backlog koreksi</button><button class="preset" data-preset="ownership" type="button">Ownership lemah</button><button class="preset" data-preset="terminology" type="button">Terminologi</button><button class="preset" data-preset="insufficient" type="button">Bukti belum cukup</button></div>
+        <div class="dashboard">
+          <aside class="side-panel card">
+            <div class="panel-head"><div><span class="overline">INPUT</span><h3>Kondisi fasyankes</h3></div><span class="help-tip" title="Semua input contoh sintetis dan tidak berasal dari data rumah sakit nyata.">ⓘ</span></div>
+            <label class="field-label" for="evidence">Kualitas bukti yang tersedia</label>
+            <select id="evidence"><option value="adequate">Memadai / tertriangulasi (simulasi)</option><option value="partial">Parsial / perlu diperiksa</option><option value="insufficient">Tidak memadai</option></select>
+            <label class="checkline"><input type="checkbox" id="matured" checked><span>Kohort sudah matured &amp; denominator jelas</span></label>
+            <div class="field-rule"></div>
+            <div class="field-row"><label for="episodes">Episode eligible matang</label><strong id="episodes-value">500</strong></div>
+            <input type="range" id="episodes" min="20" max="1000" step="20" value="500">
+            <div class="field-row"><label for="completeness">Kelengkapan episode</label><strong id="completeness-value">70%</strong></div>
+            <input type="range" id="completeness" min="30" max="98" step="1" value="70">
+            <div class="field-row"><label for="backlog">Tiket exception tertunda</label><strong id="backlog-value">90</strong></div>
+            <input type="range" id="backlog" min="0" max="250" step="5" value="90">
+            <div class="field-row"><label for="correctionDays">Median waktu koreksi</label><strong id="correctionDays-value">7 hari</strong></div>
+            <input type="range" id="correctionDays" min="1" max="21" step="1" value="7">
+            <div class="field-row"><label for="repeatErrors">Kesalahan berulang</label><strong id="repeatErrors-value">22%</strong></div>
+            <input type="range" id="repeatErrors" min="0" max="60" step="1" value="22">
+            <div class="field-rule"></div>
+            <div class="field-row"><label for="visibility">Observabilitas alur</label><strong id="visibility-value">60%</strong></div>
+            <input type="range" id="visibility" min="0" max="100" step="5" value="60">
+            <div class="field-row"><label for="ownership">Kejelasan PIC koreksi</label><strong id="ownership-value">65%</strong></div>
+            <input type="range" id="ownership" min="0" max="100" step="5" value="65">
+            <div class="field-row"><label for="terminology">Masalah mapping terminologi</label><strong id="terminology-value">4%</strong></div>
+            <input type="range" id="terminology" min="0" max="30" step="1" value="4">
+            <div class="field-row"><label for="capacity">Kapasitas tim koreksi</label><strong id="capacity-value">40%</strong></div>
+            <input type="range" id="capacity" min="0" max="100" step="5" value="40">
+            <label class="checkline"><input type="checkbox" id="transition"><span>Ada transisi/migrasi sistem aktif</span></label>
+            <button id="reset" type="button" class="reset-button">↺ Kembalikan skenario awal</button>
+          </aside>
+
+          <div class="results-panel">
+            <div class="kpis">
+              <article class="kpi card"><span>EPISODE LENGKAP</span><strong id="kpiCompleteness">70%</strong><small id="kpiCompleted">350 dari 500 episode</small></article>
+              <article class="kpi card"><span>EPISODE BELUM LENGKAP</span><strong id="kpiIncomplete">150</strong><small>Eligible − lengkap</small></article>
+              <article class="kpi card"><span>ANTREAN EXCEPTION</span><strong id="kpiBacklog">90</strong><small>Jumlah tiket; bukan 1:1 episode</small></article>
+              <article class="kpi card"><span>WAKTU KOREKSI</span><strong id="kpiDays">7 <sup>hari</sup></strong><small>Median input kasus</small></article>
+            </div>
+            <section class="gate card"><div class="gate-badge" id="gateIcon">✓</div><div><span class="overline">STAGE 01 / EVIDENCE GATE</span><h3 id="gateTitle">Bukti layak untuk diagnosis awal</h3><p id="gateDetail">Periksa kualitas cohort, denominator dan sumber indikator sebelum menetapkan mekanisme.</p></div><span class="status" id="gateStatus">READY</span></section>
+            <div class="two-cols">
+              <section class="card mechanism-card"><div class="panel-head"><div><span class="overline">STAGE 02 / DIAGNOSIS</span><h3>Hipotesis mekanisme</h3></div><span class="mini-chip">M1 – M6</span></div><p class="muted sm">Skor heuristik relatif (0–100), <strong>bukan</strong> probabilitas atau bukti sebab-akibat.</p><div id="mechanisms" class="mechanisms"></div><div class="small-note">Diagnosis memerlukan validasi lewat wawancara, audit proses dan/atau GMB.</div></section>
+              <section class="card decision-card"><div class="panel-head"><div><span class="overline">STAGE 03 / SELECT</span><h3>Intervensi yang disarankan</h3></div></div><div id="recommendation"></div></section>
+            </div>
+            <section class="card pilot-card"><div class="pilot-top"><div><span class="overline">STAGE 04–06 / APPROVAL → PILOT → VERIFY</span><h3>Simulasi perubahan selama 12 minggu</h3><p>Bandingkan kelengkapan baseline dengan lintasan hipotetis setelah intervensi. Proyeksi bukan estimasi dampak nyata.</p></div><div class="pilot-actions"><button class="btn muted-btn" type="button" id="download">Ekspor JSON</button></div></div>
+              <div class="approval-row"><label class="checkline approval"><input type="checkbox" id="approved"><span>Saya menyetujui <strong>pilot hipotetis</strong> pada kasus sintetis ini</span></label><button id="run" class="btn primary" type="button">Jalankan proyeksi ↗</button></div>
+              <div id="projectionMessage" role="status" class="projection-message">Persetujuan manusia diperlukan untuk menjalankan proyeksi intervensi.</div>
+              <div class="chart-legend"><span><i class="line baseline"></i> Praktik awal (baseline)</span><span><i class="line treated"></i> Dengan intervensi (hipotesis)</span></div>
+              <div class="chart-holder"><svg id="chart" role="img" aria-label="Grafik simulasi kelengkapan episode baseline dan intervensi selama 12 minggu" viewBox="0 0 760 276" preserveAspectRatio="xMidYMid meet"></svg></div>
+              <div id="projectionStats" class="projection-stats"></div>
+              <p class="small-note">Model stock–flow ilustratif: episode belum lengkap bertambah dari episode baru, berkurang saat koreksi selesai. Efek intervensi diberi <strong>jeda 3 minggu</strong>; koefisien dan asumsi belum dikalibrasi dengan data empiris.</p>
+            </section>
+            <section class="card trace-card"><div class="panel-head"><div><span class="overline">STAGE 07–08 / CLOSURE &amp; LEARNING</span><h3>Jejak keputusan &amp; verifikasi</h3></div><button id="copy" class="text-button" type="button">Salin ringkasan ↗</button></div><div id="trace" class="trace"></div></section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="method-section container" id="metodologi"><div class="section-head"><div><p class="eyebrow dark">02 / MODEL LOGIC</p><h2>Metode yang transparan, bukan kotak hitam.</h2><p>Setiap ambang dan parameter masih merupakan <strong>asumsi demonstrasi</strong> untuk diskusi desain artefak.</p></div></div><div class="method-grid">
+      <article class="method-card"><span class="method-index">01</span><h3>Definisikan outcome</h3><p><strong>Kelengkapan episode</strong> = episode eligible matang dengan bukti inti lengkap ÷ semua episode eligible matang. Kajian laboratorium/radiologi berelasi dengan ServiceRequest, DiagnosticReport, Observation, dan ImagingStudy sesuai modul dan ketentuan.</p></article>
+      <article class="method-card"><span class="method-index">02</span><h3>Temukan mekanisme</h3><p>Enam kelompok mekanisme: M1 observabilitas; M2 ownership; M3 retry/exception; M4 terminologi; M5 transisi sistem; M6 kapasitas/eskalasi. Skor hanyalah urutan investigasi awal, bukan klasifikasi yang tervalidasi.</p></article>
+      <article class="method-card"><span class="method-index">03</span><h3>Pilih dengan pengaman</h3><p>Evidence gate dapat memberi HOLD/INVESTIGATE. Intervensi harus memiliki tindakan, penanggung jawab, risiko, persetujuan manusia, pilot terbatas, dan kriteria verifikasi closure.</p></article>
+      <article class="method-card"><span class="method-index">04</span><h3>Uji, bukan klaim berhasil</h3><p>Bandingkan AISM terhadap praktik awal: akurasi keputusan menurut pakar, kelayakan tindakan, kejelasan PIC/closure, beban kerja, waktu koreksi, dan perubahan kelengkapan bila pilot nyata disetujui.</p></article>
+    </div>
+    <div class="formula-card"><div><span class="overline">ILUSTRASI LOGIKA PROYEKSI</span><h3>Stock &amp; Flow dalam satu persamaan</h3><p><code>BelumLengkap[t+1] = BelumLengkap[t] + EpisodeBaruBelumLengkap[t] − KoreksiSelesai[t]</code></p><p>Model menggunakan kohort awal dan tambahan episode matang mingguan, tingkat koreksi dari kapasitas simulasi, serta peningkatan bertahap setelah minggu ke-3. Ini <strong>bukan</strong> model System Dynamics hasil kalibrasi atau validasi.</p></div><span class="formula-graphic">∑<small>t = 0…12</small></span></div></section>
+
+    <section class="evaluation-section" id="evaluasi"><div class="container"><div class="section-head"><div><p class="eyebrow dark">03 / RESEARCH VALIDATION</p><h2>Bagaimana AISM dibuktikan berguna?</h2><p>Sebagai artefak <em>Design Science Research</em>, kegunaan AISM harus diuji secara sistematis, bukan disimpulkan dari simulasi ini.</p></div></div><div class="evaluation-grid">
+      <div class="evaluation-step"><span class="step-tag">01 — CONTENT</span><h3>Validasi pakar</h3><p>Review atas relevansi komponen dan aturan AISM, kecukupan bukti, serta risiko salah diagnosis.</p><small>Usulan: I-CVI, S-CVI/Ave</small></div>
+      <div class="evaluation-step"><span class="step-tag">02 — DECISION</span><h3>Uji skenario</h3><p>Bandingkan pilihan AISM terhadap keputusan panel ahli independen pada skenario sintetis.</p><small>Usulan: concordance, HOLD yang tepat</small></div>
+      <div class="evaluation-step"><span class="step-tag">03 — USABILITY</span><h3>Keterpakaian</h3><p>Uji apakah tim rumah sakit memahami rekomendasi, peran PIC, dan langkah verifikasi.</p><small>Usulan: clarity, waktu, beban kerja</small></div>
+      <div class="evaluation-step"><span class="step-tag">04 — FIELD PILOT</span><h3>Pilot terbatas</h3><p>Hanya jika memperoleh izin dan memenuhi tata kelola data; evaluasi waktu koreksi dan kelengkapan episode.</p><small>Usulan: before–after dengan pembanding</small></div>
+    </div><div class="research-note"><span>↗</span><p><strong>Pertanyaan penelitian utama:</strong> Bisakah metode berbasis bukti dan mekanisme sosio-teknis membantu organisasi memilih intervensi yang lebih tepat, dapat dilaksanakan, dan dapat diverifikasi untuk memperbaiki kelengkapan interoperabilitas diagnostik?</p></div></div></section>
+  </main>
+  <footer><div class="container footer-inner"><div><strong>AISM Lab</strong><p>Adaptive Intervention Selection Method · Research demonstrator 2026</p></div><div>Simulasi konseptual · Tanpa data pasien · Bukan kebijakan SATUSEHAT</div></div></footer>
+  <script src="./app.js" defer></script>
+</body>
+</html>
