@@ -1,10 +1,21 @@
-# AISM Lab v0.2 — Hybrid Model Builder
+# AISM Lab v0.2.1 — Mobile-first Hybrid Builder
 
 **Demo:** https://bofandra.github.io/aism/
 
 AISM Lab adalah demonstrator penelitian **Adaptive Intervention Selection Method**: pengguna dapat mendefinisikan variabel, menelusuri hipotesis hubungan, membentuk rumus, dan menguji skenario intervensi. Metode umum sama pada semua kasus; model matematis tiap domain berbeda.
 
 > **Peringatan ilmiah:** Semua contoh kasus, koefisien, perubahan parameter intervensi, biaya, dan risiko adalah **sintetis**. Mesin dapat memeriksa sintaks, dimensi satuan dan beberapa invarians numerik, namun **tidak membuktikan kausalitas atau efektivitas intervensi**. Tidak ada data pasien, koneksi SATUSEHAT, rekomendasi klinis, atau kebijakan Kemenkes.
+
+## Mobile-first refinement v0.2.1
+
+- **320–850px:** Variable Dictionary tampil dalam bentuk kartu; tabel desktop tetap tersedia untuk layar besar.
+- **Explain This Model:** inspector menjadi dialog bottom-sheet dengan tombol Tutup, overlay, Escape, focus-trap dan pengembalian fokus saat ditutup.
+- **Navigasi:** stepper dapat digeser dengan tahap aktif berada di area terlihat; tombol utama dipertahankan dekat dasar panel.
+- **Formula & grafik:** textarea persamaan dengan teks ramah sentuhan; grafik 12 minggu dapat digeser horizontal agar label tidak terlalu kecil.
+- **Kontrol sentuh:** tombol/input minimal 44px di layar kecil, input 16px untuk mengurangi zoom paksa di iOS.
+- **Proteksi pekerjaan:** model tersimpan lokal di browser (localStorage), per kasus; reset memakai konfirmasi dan satu tingkat undo. Penyimpanan lokal bukan sinkronisasi cloud dan akan hilang jika data situs dihapus.
+- **Browser QA:** workflow `.github/workflows/mobile-qa.yml` menjalankan Chromium pada 320, 360, 390, 430, 768, dan 1280px, termasuk inspeksi, edit, autosave, reset, dan undo.
+- **Batasan:** tidak ada perubahan model kausal/koefisien; data tetap sintetis. Jangan memasukkan data pasien atau informasi sensitif ke aplikasi publik atau penyimpanan browser.
 
 ## Fitur v0.2
 
