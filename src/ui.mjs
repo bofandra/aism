@@ -11,7 +11,59 @@ const options=[
   ["interventions","STEP 04 / INTERVENTIONS & SIMULATION","Apa yang terjadi jika kita bertindak?","Ubah tuas intervensi, lalu bandingkan baseline dan hasil hipotetis. Efeknya belum dikalibrasi."],
   ["evaluation","STEP 05 / EVALUATION & LEARNING","Apakah model ini bisa dipercaya?","Periksa validasi teknis, asumsi, sensitivitas, dan ekspor model lengkap untuk review pakar."]
 ];
-const state={model:getDomain("satusehat"),step:0,advanced:false,selected:{kind:"variable",id:"E"},scenario:"baseline",addVariable:false,addEdge:false,feedback:""};
+const DRAFT_KEY="aism-lab-v0.2.1-drafts";
+const clone=x=>JSON.parse(JSON.stringify(x));
+function readDrafts(){
+  try{
+    const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"{}");
+    return d&&typeof d==="object"&&d.models&&typeof d.models==="object"?d:{models:{}};
+  }catch{return {models:{}};}
+}
+function usableModel(m){return m&&typeof m==="object"&&Array.isArray(m.variables)&&m.variables.length>0&&Array.isArray(m.edges)&&Array.isArray(m.formulas)&&Array.isArray(m.interventions)&&m.outcome&&m.updates;}
+const draft=readDrafts();
+const initialId=domainIds.includes(draft.activeId)?draft.activeId:"satusehat";
+const initialModel=usableModel(draft.models[initialId])?draft.models[initialId]:getDomain(initialId);
+const state={model:initialModel,step:Math.min(4,Math.max(0,Number(draft.step)||0)),advanced:!!draft.advanced,selected:{kind:"variable",id:initialModel.variables[0].id},scenario:"baseline",addVariable:false,addEdge:false,feedback:"",inspectorOpen:false,returnFocusSpec:null,undoSnapshot:null};
+const isMobile=()=>window.matchMedia("(max-width:850px)").matches;
+const motion=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
+function persistDraft(){
+  try{
+    const d=readDrafts();d.models[state.model.id]=clone(state.model);d.activeId=state.model.id;d.step=state.step;d.advanced=state.advanced;
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(d));
+  }catch{/* private browsing or blocked storage: manual JSON export still works */}
+}
+function applyInspectorState(){
+  const open=isMobile()&&state.inspectorOpen;
+  $("inspector").classList.toggle("mobile-open",open);
+  $("inspector-backdrop").classList.toggle("mobile-open",open);
+  document.body.classList.toggle("sheet-open",open);
+  if(isMobile()){
+    $("inspector").setAttribute("role","dialog");
+    $("inspector").setAttribute("aria-modal",open?"true":"false");
+    $("inspector").setAttribute("aria-labelledby","inspector-heading");
+    $("inspector").inert=!open;
+  }else{
+    $("inspector").removeAttribute("role");
+    $("inspector").removeAttribute("aria-modal");
+    $("inspector").removeAttribute("aria-labelledby");
+    $("inspector").inert=false;
+  }
+}
+function closeInspector(){
+  if(!state.inspectorOpen)return;
+  state.inspectorOpen=false;applyInspectorState();
+  const controls=Array.from(document.querySelectorAll("#work-area [data-inspect]"));
+  (controls.find(b=>b.dataset.inspect===state.returnFocusSpec)||$("step-title")).focus();
+  state.returnFocusSpec=null;
+}
+function goStep(index){
+  state.step=Math.max(0,Math.min(options.length-1,index));
+  state.inspectorOpen=false;render();
+  const active=document.querySelector("[data-step].active");
+  if(active)active.scrollIntoView({block:"nearest",inline:"center",behavior:motion()});
+  $("step-title").scrollIntoView({block:"start",behavior:motion()});
+}
+
 function varBy(id){return state.model.variables.find(x=>x.id===id);}
 function formulaBy(id){return state.model.formulas.find(x=>x.id===id);}
 function edgeBy(id){return state.model.edges.find(x=>x.id===id);}
@@ -20,10 +72,14 @@ function rowIssue(issues){const blocks=issues.filter(i=>i.severity==="BLOCK"),wa
 function inputOptions(){return [...state.model.variables.map(v=>[v.id,v.label]),...[state.model.outcome?[ [state.model.outcome.id,state.model.outcome.label] ]:[]]];}
 function unitBadge(v){return '<span class="code-tag">'+esc(v.unit)+'</span>';}
 function badge(source){const type=source==="synthetic"?"synthetic":source==="hypothesis"||source==="structural hypothesis"?"hypo":"valid";return '<span class="badge '+type+'">'+esc(source||"not recorded")+'</span>';}
-function setFeedback(s){state.feedback=s;$("alerts").innerHTML=s?'<div class="alert warning">'+esc(s)+'</div>':"";}
+function setFeedback(s){
+  state.feedback=s;
+  const showUndo=!!state.undoSnapshot && !!s && s.includes("direset");
+  $("alerts").innerHTML=s?'<div class="alert warning"><span>'+esc(s)+'</span>'+(showUndo?'<button class="mini-btn" type="button" id="undo-reset">Batalkan reset ↶</button>':'')+'</div>':"";
+}
 function renderNavigation(){
   document.querySelectorAll("[data-step]").forEach((b,i)=>{const active=i===state.step;b.classList.toggle("active",active);b.setAttribute("aria-current",active?"step":"false");});
-  const step=options[state.step];$("step-tag").textContent=step[1];$("step-title").textContent=step[2];$("step-description").textContent=step[3];
+  const step=options[state.step];$("step-tag").textContent=step[1];$("step-title").textContent=step[2];$("step-description").textContent=step[3];$("mobile-step-progress").textContent="Tahap "+(state.step+1)+" dari "+options.length+" · "+step[0].charAt(0).toUpperCase()+step[0].slice(1);
   $("prev").disabled=state.step===0;$("next").disabled=state.step===options.length-1;
   $("next").textContent=state.step===options.length-2?"Lanjut ke evaluasi →":"Lanjutkan →";
 }
@@ -32,7 +88,13 @@ function renderVariableStage(){
   const trs=m.variables.map(v=>'<tr><td><button type="button" class="mini-btn" data-inspect="variable:'+esc(v.id)+'">Detail ↗</button></td><td><strong>'+esc(v.label)+'</strong><small><code>'+esc(v.id)+'</code> · '+esc(v.kind)+'</small></td><td>'+unitBadge(v)+'</td><td><input aria-label="Nilai '+esc(v.label)+'" class="value-input" type="number" data-value="'+esc(v.id)+'" step="any" value="'+esc(v.value)+'"></td><td>'+badge(v.source)+'</td>'+(state.advanced?'<td><button type="button" class="mini-btn danger" data-remove-var="'+esc(v.id)+'">Hapus</button></td>':'')+'</tr>').join("");
   const initialN=m.outcome.numerator, initialD=m.outcome.denominator;
   let html='<div class="intro-card"><strong>Outcome:</strong> '+esc(m.outcome.label)+' = <code>'+esc(initialN)+'</code> / <code>'+esc(initialD)+'</code>. Nilai awal dibangun dari definisi indikator, bukan bobot skor.</div>';
-  html+='<div class="box-title"><h3>Variable Dictionary</h3><small>'+m.variables.length+' variabel · '+(state.advanced?"Advanced: struktur dapat diedit":"Guided: nilai dapat diuji")+'</small></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Inspeksi</th><th>Variabel</th><th>Satuan</th><th>Nilai demo</th><th>Sumber</th>'+(state.advanced?'<th>Edit</th>':'')+'</tr></thead><tbody>'+trs+'</tbody></table></div>';
+  html+='<div class="box-title"><h3>Variable Dictionary</h3><small>'+m.variables.length+' variabel · '+(state.advanced?"Advanced: struktur dapat diedit":"Guided: nilai dapat diuji")+'</small></div><div class="table-wrap variable-table"><table class="data-table"><thead><tr><th>Inspeksi</th><th>Variabel</th><th>Satuan</th><th>Nilai demo</th><th>Sumber</th>'+(state.advanced?'<th>Edit</th>':'')+'</tr></thead><tbody>'+trs+'</tbody></table></div>';
+  html+='<div class="variable-cards" aria-label="Daftar variabel mobile">'+m.variables.map(v=>
+    '<article class="variable-card"><div class="variable-card-head"><div><span class="code-tag">'+esc(v.id)+'</span><h3>'+esc(v.label)+'</h3><span class="variable-card-sub">'+esc(v.kind)+' · '+esc(v.unit)+'</span></div></div>'+
+    '<div class="variable-card-values"><label class="inspection-label" for="mobile-value-'+esc(v.id)+'">Nilai simulasi</label><input id="mobile-value-'+esc(v.id)+'" class="value-input" type="number" step="any" data-value="'+esc(v.id)+'" value="'+esc(v.value)+'"></div>'+
+    '<div class="row-actions">'+badge(v.source)+'<button type="button" class="mini-btn" data-inspect="variable:'+esc(v.id)+'" aria-label="Lihat penjelasan '+esc(v.label)+'">ⓘ Lihat penjelasan</button>'+
+    (state.advanced?'<button type="button" class="mini-btn danger" data-remove-var="'+esc(v.id)+'">Hapus</button>':'')+'</div></article>'
+  ).join("")+'</div>';
   html+='<div class="step-summary">◇ Klik Detail untuk memeriksa sumber, definisi dan batasnya. Mengubah nilai akan memperbarui simulasi secara langsung.</div>';
   if(state.advanced){
     html+='<div class="edit-box"><div class="box-title"><h3>Tambahkan variabel</h3><button type="button" class="mini-btn" data-toggle-add-var>'+ (state.addVariable?"Tutup":"Tambah +") +'</button></div>';
@@ -61,7 +123,7 @@ function renderFormulaStage(){
   html+='<div class="box-title"><h3>Executable Formula Chain</h3><span class="badge '+(blocks.length?"synthetic":"valid")+'">'+(blocks.length?blocks.length+" BLOCK":"DIMENSION CHECK OK")+'</span></div><div class="formula-list">';
   html+=state.model.formulas.map((f,i)=>{
     const select=state.selected.kind==="formula"&&state.selected.id===f.id;
-    return '<div class="formula-card '+(select?"selected":"")+'"><div class="card-top"><h3>'+(i+1)+'. '+esc(f.label)+'</h3>'+unitBadge(f)+'</div><code>'+esc(f.id)+" = "+esc(f.expr)+'</code><p>'+esc(f.why)+'</p>'+(state.advanced?'<input class="text-field formula-input" aria-label="Edit formula '+esc(f.id)+'" data-edit-formula="'+esc(f.id)+'" value="'+esc(f.expr)+'">':'')+'<div class="row-actions"><button class="mini-btn" type="button" data-inspect="formula:'+esc(f.id)+'">Explain formula ↗</button>'+badge(f.source)+'</div></div>';
+    return '<div class="formula-card '+(select?"selected":"")+'"><div class="card-top"><h3>'+(i+1)+'. '+esc(f.label)+'</h3>'+unitBadge(f)+'</div><code>'+esc(f.id)+" = "+esc(f.expr)+'</code><p>'+esc(f.why)+'</p>'+(state.advanced?'<textarea rows="2" class="text-field formula-input" aria-label="Edit formula '+esc(f.id)+'" data-edit-formula="'+esc(f.id)+'">'+esc(f.expr)+'</textarea>':'')+'<div class="row-actions"><button class="mini-btn" type="button" data-inspect="formula:'+esc(f.id)+'">Explain formula ↗</button>'+badge(f.source)+'</div></div>';
   }).join("")+'</div>';
   html+='<div class="step-summary">↳ State update: '+esc(Object.entries(state.model.updates).map(([k,v])=>k+" ← "+v).join(" · "))+'</div>';
   if(blocks.length)html+='<div class="alert error">'+esc(blocks[0].message)+'</div>';
@@ -75,7 +137,7 @@ function outcomeChart(runs){
   for(let i=0;i<=12;i+=3)axes+='<text x="'+x(i)+'" y="'+(H-9)+'" fill="#8295A5" font-size="10" text-anchor="middle">M'+i+'</text>';
   const lines=runs.map((r,i)=>'<polyline fill="none" stroke="'+colors[i%colors.length]+'" stroke-width="'+(r.id===state.scenario?4:2.4)+'" stroke-linejoin="round" stroke-linecap="round" points="'+r.points.map(p=>x(p.week).toFixed(1)+","+y(p.value).toFixed(1)).join(" ")+'"/>').join("");
   const legend=runs.map((r,i)=>'<span class="legend-chip"><i class="swatch" style="background:'+colors[i%colors.length]+'"></i>'+esc(r.name)+'</span>').join("");
-  return '<div class="chart-card"><div class="box-title"><h3>Simulasi outcome · 12 minggu</h3><small>Proyeksi sintetis, bukan prediksi empiris</small></div><div class="legend">'+legend+'</div><svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="Grafik baseline dan alternatif intervensi selama 12 minggu">'+axes+lines+'</svg></div>';
+  return '<div class="chart-card"><div class="box-title"><h3>Simulasi outcome · 12 minggu</h3><small>Proyeksi sintetis, bukan prediksi empiris</small></div><div class="legend">'+legend+'</div><div class="chart-scroll" role="region" tabindex="0" aria-label="Grafik perbandingan intervensi yang dapat digeser horizontal"><svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="Grafik baseline dan alternatif intervensi selama 12 minggu">'+axes+lines+'</svg></div><p class="chart-hint">↔ Geser grafik ke samping untuk membaca setiap minggu</p></div>';
 }
 function renderInterventionStage(){
   const issues=validateModel(state.model),block=issues.find(i=>i.severity==="BLOCK");
@@ -156,10 +218,24 @@ function render(){
   try{$("work-area").innerHTML=name==="variables"?renderVariableStage():name==="mechanisms"?renderMechanismStage():name==="formulas"?renderFormulaStage():name==="interventions"?renderInterventionStage():renderEvaluationStage();}
   catch(e){$("work-area").innerHTML='<div class="alert error">'+esc(e.message)+'</div>';}
   renderInspector();
+  applyInspectorState();
   setFeedback(state.feedback);
+  persistDraft();
 }
-function selectCase(id){state.model=getDomain(id);state.step=0;state.selected={kind:"variable",id:state.model.variables[0].id};state.scenario="baseline";state.addVariable=false;state.addEdge=false;state.feedback="";render();}
-function inspect(spec){const p=spec.indexOf(":");state.selected={kind:spec.slice(0,p),id:spec.slice(p+1)};state.scenario=state.selected.kind==="intervention"?state.selected.id:"baseline";render();}
+function selectCase(id){
+  const drafts=readDrafts(),saved=drafts.models[id];
+  state.model=usableModel(saved)?clone(saved):getDomain(id);
+  state.step=0;state.selected={kind:"variable",id:state.model.variables[0].id};state.scenario="baseline";
+  state.addVariable=false;state.addEdge=false;state.feedback="";state.inspectorOpen=false;state.undoSnapshot=null;
+  render();
+}
+function inspect(spec){
+  const p=spec.indexOf(":");state.selected={kind:spec.slice(0,p),id:spec.slice(p+1)};
+  state.returnFocusSpec=spec;
+  state.scenario=state.selected.kind==="intervention"?state.selected.id:"baseline";
+  state.inspectorOpen=isMobile();render();
+  if(state.inspectorOpen)$("inspector-close").focus();
+}
 function download(){const m={...state.model,exportedAt:new Date().toISOString(),meta:{generator:"AISM Lab v0.2",disclaimer:"Synthetic demonstrator. Not a causal or clinical decision tool."}};const blob=new Blob([JSON.stringify(m,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="aism-v0.2-"+m.id+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}
 function changeValue(id,val){
   const v=varBy(id);if(!v)return;
@@ -201,11 +277,39 @@ async function importModel(file){
 $("domain").addEventListener("change",e=>selectCase(e.target.value));
 $("guided").addEventListener("click",()=>{state.advanced=false;render();});
 $("advanced").addEventListener("click",()=>{state.advanced=true;render();});
-$("reset").addEventListener("click",()=>selectCase(state.model.id in Object.fromEntries(domainIds.map(x=>[x,1]))?state.model.id:"satusehat"));
+$("reset").addEventListener("click",()=>{
+  if(!window.confirm("Reset semua perubahan pada kasus ini? Draf terakhir dapat dipulihkan lewat Batalkan reset."))return;
+  state.undoSnapshot={model:clone(state.model),step:state.step,selected:clone(state.selected)};
+  state.model=getDomain(domainIds.includes(state.model.id)?state.model.id:"satusehat");
+  state.step=0;state.selected={kind:"variable",id:state.model.variables[0].id};state.inspectorOpen=false;
+  state.scenario="baseline";state.addVariable=false;state.addEdge=false;state.feedback="Model direset. Draf sebelum reset masih bisa dipulihkan.";
+  render();
+});
+$("alerts").addEventListener("click",e=>{
+  if(e.target.id!=="undo-reset"||!state.undoSnapshot)return;
+  const previous=state.undoSnapshot;state.undoSnapshot=null;
+  state.model=previous.model;state.step=previous.step;state.selected=previous.selected;
+  state.feedback="Reset dibatalkan. Model sebelumnya kembali.";render();
+});
+$("inspector-close").addEventListener("click",closeInspector);
+$("inspector-backdrop").addEventListener("click",closeInspector);
+window.addEventListener("keydown",e=>{
+  if(!state.inspectorOpen||!isMobile())return;
+  if(e.key==="Escape"){e.preventDefault();closeInspector();return;}
+  if(e.key!=="Tab")return;
+  const controls=[...$("inspector").querySelectorAll('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),a[href]')].filter(el=>el.getClientRects().length);
+  if(!controls.length)return;
+  const first=controls[0],last=controls.at(-1);
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+});
+window.addEventListener("resize",()=>{
+  if(!isMobile()&&state.inspectorOpen){state.inspectorOpen=false;applyInspectorState();}
+});
 $("export").addEventListener("click",download);
-$("prev").addEventListener("click",()=>{state.step=Math.max(0,state.step-1);render();});
-$("next").addEventListener("click",()=>{state.step=Math.min(options.length-1,state.step+1);render();});
-document.querySelectorAll("[data-step]").forEach((b,i)=>b.addEventListener("click",()=>{state.step=i;render();}));
+$("prev").addEventListener("click",()=>goStep(state.step-1));
+$("next").addEventListener("click",()=>goStep(state.step+1));
+document.querySelectorAll("[data-step]").forEach((b,i)=>b.addEventListener("click",()=>goStep(i)));
 $("work-area").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   if(b.dataset.inspect){inspect(b.dataset.inspect);return;}
