@@ -23,9 +23,23 @@ function readDrafts(){
   }catch{return {models:{}};}
 }
 function usableModel(m){return m&&typeof m==="object"&&Array.isArray(m.variables)&&m.variables.length>0&&Array.isArray(m.edges)&&Array.isArray(m.formulas)&&Array.isArray(m.interventions)&&m.outcome&&m.updates;}
+function upgradeModel(source,id){
+  const m=clone(source),template=getDomain(id);
+  if(!Array.isArray(m.diagnosticRules))m.diagnosticRules=clone(template.id===id?template.diagnosticRules:[]);
+  if(!Array.isArray(m.observations))m.observations=[];
+  if(!m.decisionConfig||typeof m.decisionConfig!=="object")m.decisionConfig={budget:4,maxRisk:3,minGainPp:1};
+  for(const inter of m.interventions){
+    if(!Array.isArray(inter.targets)){
+      const t=(template.interventions||[]).find(x=>x.id===inter.id);
+      inter.targets=template.id===id&&t?clone(t.targets):[];
+    }
+  }
+  m.schemaVersion="0.3.0";
+  return m;
+}
 const draft=readDrafts();
 const initialId=domainIds.includes(draft.activeId)?draft.activeId:"satusehat";
-const initialModel=usableModel(draft.models[initialId])?draft.models[initialId]:getDomain(initialId);
+const initialModel=usableModel(draft.models[initialId])?upgradeModel(draft.models[initialId],initialId):getDomain(initialId);
 const state={model:initialModel,step:Math.min(5,Math.max(0,Number(draft.step)||0)),advanced:!!draft.advanced,selected:{kind:"variable",id:initialModel.variables[0].id},scenario:"baseline",addVariable:false,addEdge:false,feedback:"",inspectorOpen:false,returnFocusSpec:null,undoSnapshot:null,calibration:null};
 const isMobile=()=>window.matchMedia("(max-width:850px)").matches;
 const motion=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
@@ -312,7 +326,7 @@ function render(){
 }
 function selectCase(id){
   const drafts=readDrafts(),saved=drafts.models[id];
-  state.model=usableModel(saved)?clone(saved):getDomain(id);
+  state.model=usableModel(saved)?upgradeModel(saved,id):getDomain(id);
   state.step=0;state.selected={kind:"variable",id:state.model.variables[0].id};state.scenario="baseline";
   state.addVariable=false;state.addEdge=false;state.feedback="";state.inspectorOpen=false;state.undoSnapshot=null;state.calibration=null;
   render();
@@ -359,7 +373,7 @@ async function importModel(file){
     if(blocks.length)throw Error("Model gagal validasi: "+blocks[0].message);
     // Imported user models are conservatively marked unvalidated.
     m.validationStatus="not_tested";m.decisionReadiness="demo_only";
-    state.model=m;state.calibration=null;state.step=0;state.selected={kind:"variable",id:m.variables[0].id};state.feedback="Model berhasil dimuat secara lokal. Provenance dan validitas ilmiahnya masih perlu ditelaah.";render();
+    state.model=upgradeModel(m,m.id);state.calibration=null;state.step=0;state.selected={kind:"variable",id:m.variables[0].id};state.feedback="Model berhasil dimuat secara lokal. Provenance dan validitas ilmiahnya masih perlu ditelaah.";render();
   }catch(e){setFeedback("Impor gagal: "+e.message);}
 }
 $("domain").addEventListener("change",e=>selectCase(e.target.value));
