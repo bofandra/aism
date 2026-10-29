@@ -142,19 +142,53 @@ function outcomeChart(runs){
   const legend=runs.map((r,i)=>'<span class="legend-chip"><i class="swatch" style="background:'+colors[i%colors.length]+'"></i>'+esc(r.name)+'</span>').join("");
   return '<div class="chart-card"><div class="box-title"><h3>Simulasi outcome · 12 minggu</h3><small>Proyeksi sintetis, bukan prediksi empiris</small></div><div class="legend">'+legend+'</div><div class="chart-scroll" role="region" tabindex="0" aria-label="Grafik perbandingan intervensi yang dapat digeser horizontal"><svg viewBox="0 0 '+W+" "+H+'" role="img" aria-label="Grafik baseline dan alternatif intervensi selama 12 minggu">'+axes+lines+'</svg></div><p class="chart-hint">↔ Geser grafik ke samping untuk membaca setiap minggu</p></div>';
 }
+
+function renderDiagnosisStage(){
+  const m=state.model,checks=diagnose(m);
+  let html='<div class="intro-card"><strong>Diagnose before deciding.</strong> Ambang bawaan, kondisi indikator, dan hubungannya adalah asumsi demo. GAP menandai selisih dari target contoh, bukan bukti kausal. Ubah ambang di Advanced Mode dan catat dasar pemilihannya.</div>';
+  if(!checks.length)return html+'<div class="alert warning">Belum ada diagnosticRules. Tambahkan aturan diagnosis pada model JSON sebelum menilai intervensi.</div>';
+  const gaps=checks.filter(x=>x.status==="GAP").length;
+  html+='<div class="box-title"><h3>Diagnostic Gate</h3><small>'+gaps+' dari '+checks.length+' indikator melewati ambang contoh</small></div><div class="edge-list">';
+  html+=checks.map(d=>{
+    if(!d.variable)return '<div class="alert warning">Aturan '+esc(d.id)+' tidak memiliki variabel.</div>';
+    const v=d.variable,isRatio=v.unit==="ratio",value=x=>isRatio?percent(Number(x)):number(x)+" "+esc(v.unit);
+    const actions=(m.interventions||[]).filter(a=>(a.targets||[]).includes(d.variableId)).map(a=>a.label);
+    return '<div class="edge-card"><div class="card-top"><div><h3>'+esc(d.label||v.label)+'</h3><span class="code-tag">'+esc(d.variableId)+'</span></div><span class="badge '+(d.status==="GAP"?"synthetic":"valid")+'">'+(d.status==="GAP"?"GAP DEMO":"DALAM AMBANG")+'</span></div>'+
+      '<div class="edge-chain"><strong>Teramati (input): '+value(v.value)+'</strong><span>Target '+(d.comparator==="max"?"≤":"≥")+' '+value(d.threshold)+'</span></div>'+
+      '<p>Selisih menuju target: '+value(d.gap||0)+'. Aturan berasal dari contoh sintetis, bukan standar yang sudah tervalidasi.</p>'+
+      '<p>Alternatif terkait: '+esc(actions.join("; ")||"Belum ada pemetaan intervensi")+'. Panah mekanisme: '+number((d.relatedEdges||[]).length)+' hipotesis terkait.</p>'+
+      (state.advanced?'<label class="inspection-label">Ubah ambang demo <input class="text-field" type="number" step="any" data-diagnostic-threshold="'+esc(d.id)+'" value="'+esc(d.threshold)+'"></label>':'')+
+      '<div class="row-actions"><button type="button" class="mini-btn" data-inspect="variable:'+esc(v.id)+'">Periksa definisi & sumber ↗</button></div></div>';
+  }).join("")+'</div><div class="step-summary">Hubungan pada Mechanism Modeling masih hipotesis. Keterkaitan indikator dengan intervensi wajib dinyatakan eksplisit, tidak otomatis menghasilkan koefisien efek.</div>';
+  return html;
+}
 function renderInterventionStage(){
-  const issues=validateModel(state.model),block=issues.find(i=>i.severity==="BLOCK");
+  const m=state.model,issues=validateModel(m),block=issues.find(i=>i.severity==="BLOCK");
   if(block)return '<div class="alert error">Simulasi dihentikan: '+esc(block.message)+'. Perbaiki variabel/formula lebih dahulu.</div>';
-  let runs;try{runs=compare(state.model,12);}catch(e){return '<div class="alert error">'+esc(e.message)+'</div>';}
-  const baseline=runs[0].points.at(-1).value;
-  let html='<div class="intro-card">Efek intervensi disimpan sebagai <strong>perubahan eksplisit parameter</strong>, bukan disimpulkan otomatis dari skor mekanisme. Data efek dan biaya masih sintetis.</div><div class="box-title"><h3>Perbandingan alternatif</h3><small>Horizon: 12 minggu · dt=1 minggu</small></div><div class="scenario-grid">';
+  let runs,decision;try{runs=compare(m,m.horizon||12);decision=assessInterventions(m);}catch(e){return '<div class="alert error">'+esc(e.message)+'</div>';}
+  const baseline=runs[0].points.at(-1).value,config=decision.config;
+  let html='<div class="intro-card"><strong>Decision gate, bukan automatic recommendation.</strong> Perubahan efek, biaya, risiko, serta ambang keputusan masih sintetis/ordinal. Status REVIEW PILOT hanya mengundang evaluasi manusia, bukan izin implementasi.</div>';
+  html+='<div class="box-title"><h3>Batas keputusan eksplisit</h3><small>Biaya dan risiko = ordinal demo, bukan nominal uang</small></div>'+
+   '<div class="form-grid decision-controls"><div><label>Biaya relatif maksimum</label><input class="text-field" type="number" min="0" step="1" data-decision-constraint="budget" value="'+esc(config.budget)+'"></div>'+
+   '<div><label>Risiko relatif maksimum</label><input class="text-field" type="number" min="0" step="1" data-decision-constraint="maxRisk" value="'+esc(config.maxRisk)+'"></div>'+
+   '<div class="full"><label>Manfaat minimum (poin persentase)</label><input class="text-field" type="number" min="0" step="0.1" data-decision-constraint="minGainPp" value="'+esc(config.minGainPp)+'"></div></div>';
+  html+='<div class="box-title"><h3>Penilaian alternatif</h3><small>Horizon: '+number(m.horizon||12)+' minggu · baseline '+percent(baseline)+'</small></div><div class="edge-list">';
+  html+=decision.options.map(x=>{
+    const inter=interBy(x.id),statusLabel=x.status==="REVIEW_PILOT"?"TINJAU UNTUK PILOT":x.status==="HOLD"?"TAHAN":"PERLU INVESTIGASI";
+    return '<div class="intervention-card"><div class="card-top"><h3>'+esc(x.label)+'</h3><span class="badge '+(x.status==="HOLD"?"synthetic":"hypo")+'">'+statusLabel+'</span></div>'+
+      '<div class="edge-chain"><strong>Perkiraan outcome '+percent(x.final)+'</strong><span>Δ '+(x.gainPp>=0?"+":"")+number(x.gainPp)+' pp</span></div>'+
+      '<p>Biaya '+number(x.cost)+' · Risiko '+number(x.risk)+' · Jeda '+number(x.delay)+' minggu · Gap terkait: '+esc(x.matched.join(", ")||"tidak ada")+'</p>'+
+      '<div class="inspection-label">Jejak aturan keputusan</div>'+x.reasons.map(r=>'<p>• '+esc(r)+'</p>').join("")+
+      '<div class="row-actions"><button class="mini-btn" data-inspect="intervention:'+esc(x.id)+'">Penjelasan intervensi ↗</button></div>'+
+      (state.advanced?'<div class="edit-box"><label class="inspection-label">Klaim sumber efek (deklarasi pengguna; belum diverifikasi)</label><select class="text-field" data-evidence-source="'+esc(x.id)+'">'+["synthetic","expert","observational","quasi_experimental","experimental"].map(v=>'<option value="'+v+'" '+(inter.source===v?"selected":"")+'>'+v+'</option>').join("")+'</select><label class="inspection-label">Referensi / alasan evidensi</label><input class="text-field" data-evidence-reference="'+esc(x.id)+'" value="'+esc(inter.reference||"")+'" placeholder="Sitasi, dataset, atau catatan protokol"></div>':'')+'</div>';
+  }).join("")+'</div>';
+  html+='<div class="box-title"><h3>Perbandingan skenario</h3><small>Perubahan parameter eksplisit, bukan estimasi kausal</small></div><div class="scenario-grid">';
   html+=runs.map((r,i)=>{
-    const diff=(r.points.at(-1).value-baseline)*100;
-    const inter=interBy(r.id);
+    const diff=(r.points.at(-1).value-baseline)*100,inter=interBy(r.id);
     const chips=Object.entries(r.assumptions).map(([k,val])=>'<span>'+esc(k)+" → "+number(val)+'</span>').join("");
-    return '<div class="scenario '+(state.scenario===r.id?"primary":"")+'"><div class="card-top"><span class="badge '+(i===0?"valid":"synthetic")+'">'+(i===0?"BASELINE":"SYNTHETIC")+'</span><button type="button" class="mini-btn" data-inspect="'+(i===0?"baseline:baseline":"intervention:"+esc(r.id))+'">Detail ↗</button></div><strong>'+esc(r.name)+'</strong><span class="value">'+percent(r.points.at(-1).value)+'</span><small>'+ (i===0?"Tanpa perubahan":(diff>=0?"+":"")+number(diff)+" poin persentase vs baseline")+'</small><div class="assumption-list">'+(chips||'<span>Asumsi awal</span>')+'</div>'+(inter?'<p>Biaya relatif: '+number(inter.cost)+' · Risiko relatif: '+number(inter.risk)+' · Jeda: '+number(inter.delay)+' minggu</p>':'')+'</div>';
+    return '<div class="scenario '+(state.scenario===r.id?"primary":"")+'"><div class="card-top"><span class="badge '+(i===0?"valid":"synthetic")+'">'+(i===0?"BASELINE":"SYNTHETIC")+'</span><button type="button" class="mini-btn" data-inspect="'+(i===0?"baseline:baseline":"intervention:"+esc(r.id))+'">Detail ↗</button></div><strong>'+esc(r.name)+'</strong><span class="value">'+percent(r.points.at(-1).value)+'</span><small>'+(i===0?"Tanpa perubahan":(diff>=0?"+":"")+number(diff)+" pp vs baseline")+'</small><div class="assumption-list">'+(chips||'<span>Asumsi awal</span>')+'</div>'+(inter?'<p>Biaya relatif '+number(inter.cost)+' · Risiko relatif '+number(inter.risk)+'</p>':'')+'</div>';
   }).join("")+'</div>'+outcomeChart(runs);
-  html+='<div class="alert warning"><strong>Interpretasi:</strong> nilai tertinggi pada grafik tidak otomatis menjadi rekomendasi terbaik. Belum ada kalibrasi efektivitas, kelayakan, biaya empiris, maupun identifikasi kausal.</div>';
+  html+='<div class="alert warning">Tidak ada alternatif yang otomatis disetujui untuk implementasi. Efek sintetis harus diuji, konteks harus dikonfirmasi, dan keputusan tetap pada penanggung jawab manusia.</div>';
   return html;
 }
 function sensitivityTable(){
