@@ -215,6 +215,57 @@ function renderEvaluationStage(){
     try{html+='<div class="box-title"><h3>Sensitivity Test · satu variabel per uji</h3><small>±10% dari nilai awal</small></div>'+sensitivityTable();}catch(e){html+='<div class="alert error">'+esc(e.message)+'</div>';}
   }
   html+='<div class="edit-box"><h3>Reproducibility & Research Review</h3><p class="muted small">Status validasi: <strong>'+esc(state.model.validationStatus)+'</strong>. Status klaim kausal: <strong>'+esc(state.model.causalStatus)+'</strong>. Perbandingan ini masih demo-only.</p><div class="action-footer"><button class="btn btn-primary" type="button" data-download>Ekspor JSON penelitian ↓</button><label class="btn btn-outline" for="import-file">Impor JSON model ↑</label><input id="import-file" type="file" accept=".json,application/json" style="display:none"></div><p class="helper-text">Ekspor mencakup variabel, hipotesis, persamaan, intervensi, sumber asumsi dan metadata. Impor dilakukan lokal dalam browser; jangan memasukkan data pasien.</p></div>';
+
+  const observations=Array.isArray(state.model.observations)?state.model.observations:[];
+  const horizon=Number(state.model.horizon||12),tolerance=3;
+  html+='<div class="box-title"><h3>Observed vs Predicted · feedback loop</h3><small>Pengamatan diisi manual · bukan data SATUSEHAT langsung</small></div>';
+  html+='<div class="intro-card">Tambahkan outcome agregat pada satu minggu dan skenario. Deviasi terhadap prediksi menunjukkan kebutuhan investigasi, bukan bukti kesalahan satu variabel tertentu. Data tetap lokal di browser, bisa diekspor dalam JSON.</div>';
+  html+='<form id="feedback-form" class="edit-box"><h3>Catat outcome teramati</h3><div class="form-grid">'+
+   '<div><label>Skenario yang diamati</label><select class="text-field" name="scenarioId">'+
+     [{id:"baseline",label:"Baseline"},...(state.model.interventions||[])].map(x=>'<option value="'+esc(x.id)+'">'+esc(x.label)+'</option>').join("")+
+   '</select></div>'+
+   '<div><label>Minggu pengamatan (1–'+horizon+')</label><input class="text-field" name="week" type="number" min="1" max="'+horizon+'" step="1" value="'+horizon+'" required></div>'+
+   '<div><label>Outcome aktual (%)</label><input class="text-field" name="observedPercent" type="number" min="0" max="100" step="0.01" placeholder="Contoh: 78,5" required></div>'+
+   '<div><label>Toleransi evaluasi (pp)</label><input class="text-field" name="tolerancePp" type="number" min="0" max="100" step="0.1" value="3" required></div>'+
+   '<div class="full"><label>Catatan bukti agregat (opsional; tanpa data pasien)</label><textarea class="text-field text-area" name="notes" placeholder="Asal data, periode, kriteria cohort, dan keterbatasan"></textarea></div>'+
+   '<div class="full"><button class="btn btn-primary" type="submit">Simpan pengamatan & evaluasi</button></div></div></form>';
+  if(observations.length){
+    html+='<div class="box-title"><h3>Riwayat pengamatan</h3><small>'+observations.length+' rekaman tersimpan dalam model lokal</small></div><div class="edge-list">';
+    for(const rec of [...observations].reverse()){
+      try{
+        const current=assessFeedback(state.model,rec,rec.tolerancePp??tolerance);
+        const predictedAtEntry=Number.isFinite(Number(rec.predictedAtEntry))?Number(rec.predictedAtEntry):current.predictedRate;
+        const originalDeltaPp=100*(rec.observedRate-predictedAtEntry);
+        const originalStatus=Math.abs(originalDeltaPp)>(rec.tolerancePp??tolerance)?"TINJAU ULANG":"DALAM TOLERANSI";
+        html+='<div class="edge-card"><div class="card-top"><h3>'+esc(rec.scenarioId)+' · minggu '+number(rec.week)+'</h3><span class="badge '+(originalStatus==="TINJAU ULANG"?"synthetic":"valid")+'">'+originalStatus+'</span></div>'+
+        '<div class="edge-chain"><strong>Aktual '+percent(rec.observedRate)+'</strong><span>Prediksi saat dicatat '+percent(predictedAtEntry)+'</span></div>'+
+        '<p>Deviasi awal '+(originalDeltaPp>=0?"+":"")+number(originalDeltaPp)+' pp · Prediksi model sekarang '+percent(current.predictedRate)+' (deviasi '+number(current.deviationPp)+' pp)</p>'+
+        (rec.notes?'<p>Catatan: '+esc(rec.notes)+'</p>':'')+
+        '<div class="row-actions"><button class="mini-btn danger" type="button" data-remove-observation="'+esc(rec.id)+'">Hapus rekaman</button></div></div>';
+      }catch(e){html+='<div class="alert warning">Rekaman tidak dapat dihitung: '+esc(e.message)+'</div>';}
+    }
+    html+='</div>';
+    const last=observations.at(-1),selectable=state.model.variables.filter(v=>["parameter","flow"].includes(v.kind));
+    html+='<div class="edit-box"><h3>Adaptive learning · kalibrasi satu parameter</h3>'+
+      '<p class="helper-text">Hanya untuk pengamatan terakhir ('+esc(last.scenarioId)+', minggu '+number(last.week)+'). Ini pencarian lokal terbatas, bukan bukti hubungan kausal; perubahan baru berlaku setelah disetujui eksplisit.</p>'+
+      '<label class="inspection-label">Parameter yang diuji</label><select class="text-field" id="calibrate-param">'+selectable.map(v=>'<option value="'+esc(v.id)+'">'+esc(v.label)+' ('+esc(v.id)+')</option>').join("")+'</select>'+
+      '<div class="action-footer"><button type="button" class="btn btn-outline" data-propose-calibration>Hitung kandidat (tanpa mengubah model)</button></div>';
+    if(state.calibration&&state.calibration.observationId===last.id){
+      const p=state.calibration;
+      html+='<div class="alert warning"><strong>Kandidat '+esc(p.parameterId)+'</strong>: '+number(p.previousValue)+' → '+number(p.value)+
+        '. Selisih proyeksi vs aktual '+number(p.originalErrorPp)+' → '+number(p.errorPp)+' pp. Rentang yang diuji '+number(p.range[0])+'–'+number(p.range[1])+'.'+
+        (p.boundary?' Nilai optimum berada di batas pencarian; perlu pemeriksaan lebih lanjut.':'')+
+        '<p>'+esc(p.warning)+'</p></div><button type="button" class="btn btn-primary" data-accept-calibration>Setujui pembaruan parameter & catat riwayat</button>';
+    }
+    html+='</div>';
+  }else{
+    html+='<div class="alert warning">Belum ada pengamatan aktual. Model belum dapat memperbarui parameternya secara ilmiah; jangan menafsirkan grafik demo sebagai hasil implementasi.</div>';
+  }
+  const history=state.model.calibrationHistory||[];
+  if(history.length){
+    html+='<div class="box-title"><h3>Riwayat pembaruan parameter</h3><small>Jejak audit eksplisit</small></div><div class="edge-list">'+
+    history.slice().reverse().map(h=>'<div class="lineage-item"><code>'+esc(h.parameterId)+'</code><span>'+number(h.before)+' → '+number(h.after)+'</span><span>'+esc(h.at||"")+'</span></div>').join("")+'</div>';
+  }
   return html;
 }
 function renderInspector(){
