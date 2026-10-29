@@ -328,7 +328,7 @@ function download(){const m={...state.model,exportedAt:new Date().toISOString(),
 function changeValue(id,val){
   const v=varBy(id);if(!v)return;
   const n=Number(val);if(!Number.isFinite(n)){setFeedback("Nilai harus numerik");return;}
-  v.value=n;state.feedback="";render();
+  v.value=n;state.feedback="";state.calibration=null;render();
 }
 function addVariable(form){
   const data=Object.fromEntries(new FormData(form).entries()),id=data.id;
@@ -406,14 +406,72 @@ $("work-area").addEventListener("click",e=>{
   if(b.dataset.removeVar){removeVariable(b.dataset.removeVar);return;}
   if(b.dataset.removeEdge){state.model.edges=state.model.edges.filter(x=>x.id!==b.dataset.removeEdge);state.selected={kind:"variable",id:state.model.variables[0].id};render();return;}
   if(b.dataset.download!==undefined){download();return;}
+  if(b.dataset.removeObservation){
+    state.model.observations=(state.model.observations||[]).filter(x=>x.id!==b.dataset.removeObservation);
+    state.calibration=null;state.feedback="Rekaman pengamatan dihapus.";render();return;
+  }
+  if(b.dataset.proposeCalibration!==undefined){
+    const obs=(state.model.observations||[]).at(-1),parameterId=$("calibrate-param")?.value;
+    if(!obs||!parameterId){setFeedback("Rekaman dan parameter kalibrasi wajib tersedia.");return;}
+    try{
+      state.calibration={...proposeCalibration(state.model,obs,parameterId),observationId:obs.id};
+      state.feedback="Kandidat kalibrasi dihitung. Tidak ada nilai model yang diubah.";render();
+    }catch(e){state.calibration=null;setFeedback("Kalibrasi tidak dapat dijalankan: "+e.message);}
+    return;
+  }
+  if(b.dataset.acceptCalibration!==undefined){
+    const proposal=state.calibration,obs=(state.model.observations||[]).at(-1);
+    if(!proposal||proposal.observationId!==obs?.id){setFeedback("Kandidat tidak berlaku untuk pengamatan terakhir.");return;}
+    const v=varBy(proposal.parameterId);
+    if(!v||Math.abs(Number(v.value)-proposal.previousValue)>1e-10){state.calibration=null;setFeedback("Nilai telah berubah. Hitung kembali kandidat.");return;}
+    state.model.calibrationHistory??=[];
+    state.model.calibrationHistory.push({at:new Date().toISOString(),observationId:obs.id,parameterId:v.id,before:v.value,after:proposal.value,fitErrorPp:proposal.errorPp,method:"single-parameter local grid (80 intervals)",review:"manual approval; not causal identification"});
+    v.value=proposal.value;state.calibration=null;
+    state.model.validationStatus="not_tested";state.feedback="Parameter diperbarui secara eksplisit. Periksa kembali kecocokan model pada data lain.";render();return;
+  }
 });
 $("work-area").addEventListener("change",e=>{
   const t=e.target;
   if(t.dataset.value){changeValue(t.dataset.value,t.value);return;}
+  if(t.dataset.diagnosticThreshold){
+    const rule=(state.model.diagnosticRules||[]).find(x=>x.id===t.dataset.diagnosticThreshold),n=Number(t.value);
+    if(!rule||!Number.isFinite(n)||n<0){setFeedback("Ambang harus berupa angka non-negatif.");return;}
+    rule.threshold=n;rule.source="user_defined";rule.reference="Ambang diubah oleh pengguna; dasar empiris belum diverifikasi.";
+    state.calibration=null;render();return;
+  }
+  if(t.dataset.decisionConstraint){
+    const n=Number(t.value),key=t.dataset.decisionConstraint;
+    if(!["budget","maxRisk","minGainPp"].includes(key)||!Number.isFinite(n)||n<0){setFeedback("Batas keputusan harus angka non-negatif.");return;}
+    state.model.decisionConfig??={};
+    state.model.decisionConfig[key]=n;render();return;
+  }
+  if(t.dataset.evidenceSource){
+    const inter=interBy(t.dataset.evidenceSource);
+    if(inter&&["synthetic","expert","observational","quasi_experimental","experimental"].includes(t.value)){
+      inter.source=t.value;state.model.validationStatus="not_tested";render();
+    }return;
+  }
+  if(t.dataset.evidenceReference){
+    const inter=interBy(t.dataset.evidenceReference);
+    if(inter){inter.reference=t.value.trim();state.model.validationStatus="not_tested";render();}
+    return;
+  }
   if(t.dataset.editFormula){const f=formulaBy(t.dataset.editFormula);if(f){f.expr=t.value;state.selected={kind:"formula",id:f.id};state.feedback="Formula diperbarui. Validasi satuan dan dependensi dihitung ulang.";render();}}
   if(t.id==="import-file"){importModel(t.files[0]);}
 });
 $("work-area").addEventListener("submit",e=>{
+  if(e.target.id==="feedback-form"){
+    e.preventDefault();const data=Object.fromEntries(new FormData(e.target).entries());
+    const week=Number(data.week),observedRate=Number(data.observedPercent)/100,tolerancePp=Number(data.tolerancePp);
+    if(!Number.isInteger(week)||week<1||week>Number(state.model.horizon||12)||!Number.isFinite(observedRate)||observedRate<0||observedRate>1||!Number.isFinite(tolerancePp)||tolerancePp<0){setFeedback("Minggu, persentase atau toleransi tidak valid.");return;}
+    const rec={id:"obs-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),at:new Date().toISOString(),week,scenarioId:data.scenarioId,observedRate,tolerancePp,notes:String(data.notes||"").slice(0,1000)};
+    try{
+      const checked=assessFeedback(state.model,rec,tolerancePp);rec.predictedAtEntry=checked.predictedRate;
+      state.model.observations??=[];state.model.observations.push(rec);
+      state.calibration=null;state.feedback="Pengamatan agregat tercatat. Bandingkan deviasi dan evaluasi asumsi sebelum tindakan.";render();
+    }catch(err){setFeedback("Pengamatan tidak disimpan: "+err.message);}
+    return;
+  }
   if(e.target.id==="add-var-form"||e.target.id==="add-edge-form"){e.preventDefault();if(e.target.id==="add-var-form")addVariable(e.target);else addEdge(e.target);}
 });
 $("inspector-body").addEventListener("change",e=>{
