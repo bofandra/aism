@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {getDomain,domainIds} from "../src/domains.mjs";
 import {diagnose,assessInterventions} from "../src/decision.mjs";
+import {simulate} from "../src/core.mjs";
 import {assessFeedback,proposeCalibration} from "../src/adaptive.mjs";
 
 test("all example domains provide readable diagnostic rules",()=>{
@@ -41,7 +42,6 @@ test("observation gap is calculated in percentage points",()=>{
 test("fitting yields preview only; original model remains unchanged",()=>{
   const m=getDomain("satusehat"),p=m.variables.find(v=>v.id==="p");
   const actual=getDomain("satusehat");actual.variables.find(v=>v.id==="p").value=0.40;
-  const {simulate}=await import("../src/core.mjs");
   const observed=simulate(actual,"baseline",5).points.at(-1).value;
   const proposal=proposeCalibration(m,{scenarioId:"baseline",week:5,observedRate:observed},"p");
   assert.ok(proposal.errorPp<0.25);
