@@ -1,5 +1,7 @@
 import {getDomain,domainIds} from "./domains.mjs";
 import {parse,references,getLineage,validateModel,compare,simulate} from "./core.mjs";
+import {diagnose,assessInterventions} from "./decision.mjs";
+import {assessFeedback,proposeCalibration} from "./adaptive.mjs";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const number=x=>Number.isFinite(Number(x))?Number(x).toLocaleString("id-ID",{maximumFractionDigits:3}):"—";
@@ -8,10 +10,11 @@ const options=[
   ["variables","STEP 01 / VARIABLE IDENTIFICATION","Variabel apa yang membentuk masalah?","Telusuri definisi, satuan, asal data dan peran setiap variabel. Angka demo bukan parameter penelitian."],
   ["mechanisms","STEP 02 / MECHANISM MODELING","Bagaimana variabel saling terkait?","Hubungan di bawah masih berupa hipotesis. Arah pengaruh bukan bukti sebab-akibat."],
   ["formulas","STEP 03 / FORMULA CONSTRUCTION","Dari variabel menjadi persamaan","Persamaan mempunyai satuan, dependensi, alasan dan sumber. Advanced Mode membuka editor formula aman."],
-  ["interventions","STEP 04 / INTERVENTIONS & SIMULATION","Apa yang terjadi jika kita bertindak?","Ubah tuas intervensi, lalu bandingkan baseline dan hasil hipotetis. Efeknya belum dikalibrasi."],
-  ["evaluation","STEP 05 / EVALUATION & LEARNING","Apakah model ini bisa dipercaya?","Periksa validasi teknis, asumsi, sensitivitas, dan ekspor model lengkap untuk review pakar."]
+  ["diagnosis","STEP 04 / EVIDENCE-BASED DIAGNOSIS","Gap apa yang benar-benar teramati?","Bandingkan indikator terhadap ambang eksplisit; ambang bawaan masih sintetis dan bukan standar kebijakan."],
+  ["interventions","STEP 05 / INTERVENTION DECISIONS","Alternatif mana layak ditinjau?","Keputusan dibatasi bukti, kecocokan gap, dampak, biaya dan risiko — tanpa klaim rekomendasi otomatis."],
+  ["evaluation","STEP 06 / ADAPTIVE EVALUATION","Apa yang dipelajari dari hasil aktual?","Catat pengamatan, evaluasi selisih prediksi, dan ajukan kalibrasi satu parameter dengan persetujuan manusia."]
 ];
-const DRAFT_KEY="aism-lab-v0.2.1-drafts";
+const DRAFT_KEY="aism-lab-v0.2.1-drafts"; // retain previous local drafts after upgrade
 const clone=x=>JSON.parse(JSON.stringify(x));
 function readDrafts(){
   try{
@@ -23,7 +26,7 @@ function usableModel(m){return m&&typeof m==="object"&&Array.isArray(m.variables
 const draft=readDrafts();
 const initialId=domainIds.includes(draft.activeId)?draft.activeId:"satusehat";
 const initialModel=usableModel(draft.models[initialId])?draft.models[initialId]:getDomain(initialId);
-const state={model:initialModel,step:Math.min(4,Math.max(0,Number(draft.step)||0)),advanced:!!draft.advanced,selected:{kind:"variable",id:initialModel.variables[0].id},scenario:"baseline",addVariable:false,addEdge:false,feedback:"",inspectorOpen:false,returnFocusSpec:null,undoSnapshot:null};
+const state={model:initialModel,step:Math.min(5,Math.max(0,Number(draft.step)||0)),advanced:!!draft.advanced,selected:{kind:"variable",id:initialModel.variables[0].id},scenario:"baseline",addVariable:false,addEdge:false,feedback:"",inspectorOpen:false,returnFocusSpec:null,undoSnapshot:null,calibration:null};
 const isMobile=()=>window.matchMedia("(max-width:850px)").matches;
 const motion=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
 function persistDraft(){
@@ -215,7 +218,7 @@ function render(){
   $("question").textContent=state.model.question;$("case-sector").textContent=state.model.sector;
   renderNavigation();
   const name=options[state.step][0];
-  try{$("work-area").innerHTML=name==="variables"?renderVariableStage():name==="mechanisms"?renderMechanismStage():name==="formulas"?renderFormulaStage():name==="interventions"?renderInterventionStage():renderEvaluationStage();}
+  try{$("work-area").innerHTML=name==="variables"?renderVariableStage():name==="mechanisms"?renderMechanismStage():name==="formulas"?renderFormulaStage():name==="diagnosis"?renderDiagnosisStage():name==="interventions"?renderInterventionStage():renderEvaluationStage();}
   catch(e){$("work-area").innerHTML='<div class="alert error">'+esc(e.message)+'</div>';}
   renderInspector();
   applyInspectorState();
@@ -226,7 +229,7 @@ function selectCase(id){
   const drafts=readDrafts(),saved=drafts.models[id];
   state.model=usableModel(saved)?clone(saved):getDomain(id);
   state.step=0;state.selected={kind:"variable",id:state.model.variables[0].id};state.scenario="baseline";
-  state.addVariable=false;state.addEdge=false;state.feedback="";state.inspectorOpen=false;state.undoSnapshot=null;
+  state.addVariable=false;state.addEdge=false;state.feedback="";state.inspectorOpen=false;state.undoSnapshot=null;state.calibration=null;
   render();
 }
 function inspect(spec){
@@ -236,7 +239,7 @@ function inspect(spec){
   state.inspectorOpen=isMobile();render();
   if(state.inspectorOpen)$("inspector-close").focus();
 }
-function download(){const m={...state.model,exportedAt:new Date().toISOString(),meta:{generator:"AISM Lab v0.2",disclaimer:"Synthetic demonstrator. Not a causal or clinical decision tool."}};const blob=new Blob([JSON.stringify(m,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="aism-v0.2-"+m.id+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}
+function download(){const m={...state.model,exportedAt:new Date().toISOString(),meta:{generator:"AISM Lab v0.3",disclaimer:"Synthetic demonstrator. Not a causal or clinical decision tool."}};const blob=new Blob([JSON.stringify(m,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="aism-v0.3-"+m.id+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);}
 function changeValue(id,val){
   const v=varBy(id);if(!v)return;
   const n=Number(val);if(!Number.isFinite(n)){setFeedback("Nilai harus numerik");return;}
@@ -271,7 +274,7 @@ async function importModel(file){
     if(blocks.length)throw Error("Model gagal validasi: "+blocks[0].message);
     // Imported user models are conservatively marked unvalidated.
     m.validationStatus="not_tested";m.decisionReadiness="demo_only";
-    state.model=m;state.step=0;state.selected={kind:"variable",id:m.variables[0].id};state.feedback="Model berhasil dimuat secara lokal. Provenance dan validitas ilmiahnya masih perlu ditelaah.";render();
+    state.model=m;state.calibration=null;state.step=0;state.selected={kind:"variable",id:m.variables[0].id};state.feedback="Model berhasil dimuat secara lokal. Provenance dan validitas ilmiahnya masih perlu ditelaah.";render();
   }catch(e){setFeedback("Impor gagal: "+e.message);}
 }
 $("domain").addEventListener("change",e=>selectCase(e.target.value));
@@ -282,7 +285,7 @@ $("reset").addEventListener("click",()=>{
   state.undoSnapshot={model:clone(state.model),step:state.step,selected:clone(state.selected)};
   state.model=getDomain(domainIds.includes(state.model.id)?state.model.id:"satusehat");
   state.step=0;state.selected={kind:"variable",id:state.model.variables[0].id};state.inspectorOpen=false;
-  state.scenario="baseline";state.addVariable=false;state.addEdge=false;state.feedback="Model direset. Draf sebelum reset masih bisa dipulihkan.";
+  state.scenario="baseline";state.addVariable=false;state.addEdge=false;state.calibration=null;state.feedback="Model direset. Draf sebelum reset masih bisa dipulihkan.";
   render();
 });
 $("alerts").addEventListener("click",e=>{
