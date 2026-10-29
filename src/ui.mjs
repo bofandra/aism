@@ -317,6 +317,7 @@ function render(){
   $("question").textContent=state.model.question;$("case-sector").textContent=state.model.sector;
   renderNavigation();
   const name=options[state.step][0];
+  document.querySelector(".main-panel").classList.toggle("evaluation-mode",name==="evaluation");
   try{$("work-area").innerHTML=name==="variables"?renderVariableStage():name==="mechanisms"?renderMechanismStage():name==="formulas"?renderFormulaStage():name==="diagnosis"?renderDiagnosisStage():name==="interventions"?renderInterventionStage():renderEvaluationStage();}
   catch(e){$("work-area").innerHTML='<div class="alert error">'+esc(e.message)+'</div>';}
   renderInspector();
