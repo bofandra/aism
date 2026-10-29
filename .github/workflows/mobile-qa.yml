@@ -3,6 +3,8 @@ name: AISM Mobile Browser QA
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -23,6 +25,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Unit and syntax regression tests
+        run: |
+          node --check src/decision.mjs
+          node --check src/adaptive.mjs
+          node --check src/ui.mjs
+          node --test tests/*.test.mjs
       - name: Install Playwright and headless Chromium
         run: |
           npm install --no-save --no-package-lock playwright@1.56.1

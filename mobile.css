@@ -53,6 +53,7 @@
   .chart-card .legend{gap:10px;font-size:12px}
   .chart-card .box-title{align-items:flex-start;flex-wrap:wrap}
   .stage-nav{gap:10px;position:sticky;bottom:0;z-index:5;background:#fff;padding:14px 0 calc(12px + env(safe-area-inset-bottom));box-shadow:0 -10px 16px rgba(255,255,255,.92)}
+  .main-panel.evaluation-mode .stage-nav{position:static;box-shadow:none}
   .btn,.mini-btn,.segmented button,.steps button,.toolbar-actions button{min-height:44px}
   .mini-btn{padding:10px 12px;font-size:12px}
   .btn{font-size:12px}

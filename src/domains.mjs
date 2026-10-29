@@ -4,7 +4,7 @@ const v=(id,label,unit,value,kind,definition,extra={})=>({id,label,unit,value,ki
 const f=(id,label,expr,unit,why,kind="structural")=>({id,label,expr,unit,why,kind,source:"structural hypothesis",reference:"Persamaan ilustratif; perlu validasi struktur dan perilaku"});
 const e=(from,to,sign,why,lag=0)=>({id:"edge-"+from+"-"+to,from,to,sign,lag,why,source:"hypothesis",reference:"Perlu triangulasi data, wawancara, dan kajian literatur"});
 const a=(id,label,desc,changes,cost,risk,delay=0)=>({id,label,desc,changes,cost,risk,delay,source:"synthetic",reference:"Asumsi respons intervensi; bukan estimasi kausal"});
-const COMMON={schemaVersion:"0.2.0",validationStatus:"not_tested",causalStatus:"hypothesis",decisionReadiness:"demo_only",timeUnit:"week",horizon:12,dt:1};
+const COMMON={schemaVersion:"0.3.0",validationStatus:"not_tested",causalStatus:"hypothesis",decisionReadiness:"demo_only",timeUnit:"week",horizon:12,dt:1,decisionConfig:{budget:4,maxRisk:3,minGainPp:1},observations:[]};
 export const domains={
   satusehat:{
     ...COMMON,id:"satusehat",label:"SATUSEHAT · diagnostik",sector:"Kesehatan",
@@ -120,5 +120,24 @@ export const domains={
     ]
   }
 };
+
+ // Diagnostic thresholds below are SYNTHETIC discussion prompts, not clinical or managerial standards.
+const RULES={
+  satusehat:[["p","max",0.20,"Fraksi tidak lengkap pada episode baru"],["mapping_err","max",0.10,"Kualitas mapping terminologi"],["K","min",25,"Kapasitas koreksi mingguan"],["pic_coverage","min",0.80,"Kejelasan penanggung jawab"],["visibility","min",0.80,"Observabilitas proses"]],
+  education:[["d","max",6,"Laju keluar cohort"],["mentoring_coverage","min",0.60,"Cakupan pendampingan"],["financial_risk","max",0.20,"Risiko pendanaan"]],
+  logistics:[["Q","max",120,"Antrean pengiriman"],["S","min",110,"Kapasitas pemrosesan"],["pOnTime","min",0.85,"Ketepatan waktu kiriman"],["fleet","min",0.85,"Kesiapan armada"]]
+};
+const TARGETS={
+  satusehat:{mapping:["p","mapping_err"],capacity:["K"],combined:["p","mapping_err","K"]},
+  education:{mentoring:["d","mentoring_coverage"],aid:["d","financial_risk"],combo:["d","mentoring_coverage","financial_risk"]},
+  logistics:{capacity:["S","Q"],routing:["pOnTime"],combo:["S","pOnTime"]}
+};
+for(const [id,model] of Object.entries(domains)){
+  model.diagnosticRules=RULES[id].map(([variableId,comparator,threshold,label])=>({
+    id:"rule-"+variableId,variableId,comparator,threshold,label,
+    source:"synthetic",reference:"Ambang contoh untuk latihan diagnosis; perlu ditetapkan dari bukti dan konteks."
+  }));
+  for(const inter of model.interventions)inter.targets=TARGETS[id][inter.id]||[];
+}
 export function getDomain(id){return JSON.parse(JSON.stringify(domains[id]||domains.satusehat));}
 export const domainIds=Object.keys(domains);

@@ -27,6 +27,8 @@ jobs:
         run: |
           node --check src/core.mjs
           node --check src/domains.mjs
+          node --check src/decision.mjs
+          node --check src/adaptive.mjs
           node --check src/ui.mjs
           node --test tests/*.test.mjs
           test -s index.html

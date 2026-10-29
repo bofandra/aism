@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0B1829">
-  <meta name="description" content="AISM Lab v0.2: bangun variabel, hipotesis mekanisme, persamaan dan simulasi intervensi secara transparan.">
-  <title>AISM Lab v0.2 — Method Construction & Simulation</title>
+  <meta name="description" content="AISM Lab v0.3: bangun variabel, hipotesis mekanisme, persamaan dan simulasi intervensi secara transparan.">
+  <title>AISM Lab v0.3 — Explainable Intervention Decision Lab</title>
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./mobile.css">
 </head>
@@ -15,13 +15,13 @@
     <div class="shell head-inner">
       <a class="identity" href="./"><span class="mark">A<span>.</span></span><span class="brand-copy"><strong>AISM Lab</strong><small>ADAPTIVE INTERVENTION SELECTION METHOD</small></span></a>
       <nav class="head-nav"><a href="#builder">Model Builder</a><a href="#method">Metodologi</a><a href="https://github.com/bofandra/aism" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
-      <span class="version">v0.2.1 · MOBILE</span>
+      <span class="version">v0.3 · ADAPTIVE</span>
     </div>
   </header>
   <main>
     <section class="intro shell">
-      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, rumus dan hipotesis mekanisme; bandingkan intervensi; telusuri dari mana setiap angka berasal. Satu metode, beberapa domain permasalahan.</p><a class="btn btn-primary mobile-start" href="#builder">Mulai simulasi →</a></div>
-      <div class="intro-metrics"><div><strong>07</strong><span>TAHAP METODE</span></div><div><strong>03</strong><span>DOMAIN CONTOH</span></div><div><strong>01</strong><span>MESIN MODEL</span></div></div>
+      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, hipotesis dan persamaan; diagnosis gap; kaji batas keputusan; bandingkan simulasi dengan hasil aktual. Satu metode, beberapa domain permasalahan.</p><a class="btn btn-primary mobile-start" href="#builder">Mulai simulasi →</a></div>
+      <div class="intro-metrics"><div><strong>06</strong><span>TAHAP INTERAKTIF</span></div><div><strong>03</strong><span>DOMAIN CONTOH</span></div><div><strong>01</strong><span>MESIN MODEL</span></div></div>
     </section>
     <section class="lab-section" id="builder">
       <div class="shell">
@@ -33,18 +33,19 @@
         <div class="question-strip"><span class="question-index">RESEARCH QUESTION</span><strong id="question"></strong><span class="question-meta" id="case-sector"></span></div>
         <div class="lab-layout">
           <aside class="stepper panel" aria-label="Tahap AISM">
-            <span class="section-kicker">WORKFLOW / v0.2</span>
+            <span class="section-kicker">WORKFLOW / v0.3</span>
             <h2>Bangun model</h2>
             <p>Ikuti proses dari variabel sampai model yang dapat dihitung.</p>
-            <div class="mobile-step-progress" id="mobile-step-progress" aria-live="polite">Tahap 1 dari 5</div>
+            <div class="mobile-step-progress" id="mobile-step-progress" aria-live="polite">Tahap 1 dari 6</div>
             <div class="steps">
               <button type="button" data-step="variables" class="active"><span>01</span><span><strong>Variabel</strong><small>Apa yang diukur?</small></span></button>
               <button type="button" data-step="mechanisms"><span>02</span><span><strong>Mekanisme</strong><small>Bagaimana saling terkait?</small></span></button>
               <button type="button" data-step="formulas"><span>03</span><span><strong>Formula Lab</strong><small>Mengapa rumus demikian?</small></span></button>
-              <button type="button" data-step="interventions"><span>04</span><span><strong>Intervensi</strong><small>Bagaimana akibatnya?</small></span></button>
-              <button type="button" data-step="evaluation"><span>05</span><span><strong>Evaluasi</strong><small>Apa yang bisa dipercaya?</small></span></button>
+              <button type="button" data-step="diagnosis"><span>04</span><span><strong>Diagnosis</strong><small>Mana gap berbukti?</small></span></button>
+              <button type="button" data-step="interventions"><span>05</span><span><strong>Keputusan</strong><small>Mana yang layak dikaji?</small></span></button>
+              <button type="button" data-step="evaluation"><span>06</span><span><strong>Adaptasi</strong><small>Belajar dari hasil?</small></span></button>
             </div>
-            <div class="side-promo"><span>METODE LENGKAP</span><p>Problem Definition → Variables → Mechanisms → Formulation → Intervention → Simulation → Evaluation</p><small>Problem Definition melekat pada studi kasus; Simulation terintegrasi dengan Interventions pada v0.2.</small></div>
+            <div class="side-promo"><span>METODE LENGKAP</span><p>Problem Definition → Variables → Mechanisms → Formulation → Diagnosis → Decision → Adaptive Evaluation</p><small>Problem Definition melekat pada studi kasus; Simulation terintegrasi dalam tahap keputusan pada v0.3.</small></div>
           </aside>
           <section class="main-panel panel" aria-live="polite">
             <div class="workspace-head"><span class="section-kicker" id="step-tag">STEP 01 / VARIABLE IDENTIFICATION</span><h2 id="step-title">Variabel apa yang membentuk masalah?</h2><p id="step-description"></p></div>
@@ -67,11 +68,11 @@
         <article><span>01 / DEFINE</span><h3>Definisikan outcome</h3><p>Populasi, satuan dan batas sistem harus jelas sebelum membuat skor atau persamaan.</p></article>
         <article><span>02 / EXPLAIN</span><h3>Bangun hipotesis</h3><p>Hubungan variabel disertai justifikasi, status bukti, dan kemungkinan mekanisme alternatif.</p></article>
         <article><span>03 / FORMULATE</span><h3>Uji persamaan</h3><p>Parser aman, pemeriksaan satuan dan hasil numerik memberi fondasi untuk evaluasi lebih lanjut.</p></article>
-        <article><span>04 / LEARN</span><h3>Bandingkan intervensi</h3><p>Hasil simulasi masih merupakan skenario sampai respons intervensi didukung data empiris.</p></article>
+        <article><span>04 / LEARN</span><h3>Evaluasi dan adaptasi</h3><p>Keputusan tetap ditinjau manusia; hasil aktual dapat dicatat, lalu parameter diperbarui hanya dengan persetujuan eksplisit.</p></article>
       </div>
     </section>
   </main>
-  <footer><div class="shell"><strong>AISM Lab v0.2.1</strong><span>Design Science Research · Systems Thinking · Synthetic-only prototype · 2026</span><span>© Research demonstrator · No patient data</span></div></footer>
+  <footer><div class="shell"><strong>AISM Lab v0.3</strong><span>Design Science Research · Systems Thinking · Synthetic-only prototype · 2026</span><span>© Research demonstrator · No patient data</span></div></footer>
   <script type="module" src="./src/ui.mjs"></script>
 </body>
 </html>

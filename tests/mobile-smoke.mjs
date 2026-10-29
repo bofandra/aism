@@ -51,6 +51,19 @@ try{
       const max=await chart.evaluate(e=>e.scrollWidth-e.clientWidth);
       if(width<=430)assert.ok(max>0,"Chart did not scroll at "+width);
       if(max>0){await chart.evaluate(e=>e.scrollLeft=125);assert.ok((await chart.evaluate(e=>e.scrollLeft))>0);}
+      await page.locator('[data-step="diagnosis"]').click();
+      assert.ok(await page.locator('.edge-card').count()>0,"Diagnostic rule cards missing");
+      await page.locator('[data-step="interventions"]').click();
+      assert.ok((await page.getByText("PERLU INVESTIGASI").count())>0,"Evidence gate must not recommend synthetic action");
+      await page.locator('[data-step="evaluation"]').click();
+      await page.locator('input[name="observedPercent"]').fill("70");
+      await page.locator('#feedback-form button[type="submit"]').click();
+      assert.ok((await page.getByText("Prediksi saat dicatat").count())>0,"Saved observed outcome not shown");
+      await page.locator("#calibrate-param").selectOption("p");
+      await page.locator("[data-propose-calibration]").click();
+      assert.equal(await page.locator("[data-accept-calibration]").isVisible(),true,"Manual calibration approval missing");
+      await page.locator("[data-accept-calibration]").click();
+      assert.ok((await page.getByText("Riwayat pembaruan parameter").count())>0);
       await page.locator('[data-step="variables"]').click();
       const value=page.locator('.variable-card [data-value="E"]').first();
       await value.fill("640");
