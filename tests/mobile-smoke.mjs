@@ -29,39 +29,9 @@ try{
     await page.screenshot({path:"tests/screenshots/aism-"+width+".png",fullPage:true});
     const dimensions=await page.evaluate(()=>({viewport:innerWidth,body:document.body.scrollWidth,root:document.documentElement.scrollWidth}));
     assert.ok(dimensions.root<=dimensions.viewport+2,"Horizontal page overflow "+width+": "+JSON.stringify(dimensions));
-    assert.equal(await page.locator("#literature").count(),1);
-    assert.ok(await page.locator(".lit-matrix tbody tr").count()>=12);
-    if(width<=430){
-      const matrix=page.locator(".lit-scroller");
-      assert.ok(await matrix.evaluate(x=>x.scrollWidth>x.clientWidth),"Literature matrix should scroll on mobile");
-    }
-    if(width===390||width===1280){
-      await page.locator('[data-lit-tab="novelty"]').click();
-      await page.locator('[data-claim="adaptation"]').click();
-      assert.ok((await page.getByText("SMART, JITAI", {exact:false}).count())>0);
-      await page.locator('[data-lit-tab="matrix"]').click();
-      await page.locator("#lit-search").fill("Fernandez");
-      assert.equal(await page.locator(".lit-matrix tbody tr").count(),1);
-      await page.locator('[data-paper="fernandez2019"]').first().click();
-      await page.locator("#lit-reading").selectOption("abstract");
-      await page.locator("#lit-notes").fill("Catatan QA tentang overlap dengan Implementation Mapping");
-      await page.locator("#lit-save").click();
-      await page.reload({waitUntil:"networkidle"});
-      assert.equal(await page.locator("#lit-reading").inputValue(),"abstract");
-      assert.match(await page.locator("#lit-notes").inputValue(),/Catatan QA/);
-      await page.locator("#lit-add-toggle").click();
-      await page.locator('#lit-add-form [name="title"]').fill("Demo comparison paper");
-      await page.locator('#lit-add-form [name="author"]').fill("Researcher");
-      await page.locator('#lit-add-form [name="year"]').fill("2025");
-      await page.locator('#lit-add-form [name="doi"]').fill("10.9999/aism-demo-only");
-      await page.locator('#lit-add-form [name="summary"]').fill("Test summary");
-      await page.locator('#lit-add-form [name="overlap"]').fill("Test overlap");
-      await page.locator('#lit-add-form [name="caveat"]').fill("Test limitation");
-      await page.locator('#lit-add-form button[type="submit"]').click();
-      assert.equal(await page.locator("#lit-count").textContent(),"15");
-      await page.reload({waitUntil:"networkidle"});
-      assert.equal(await page.locator("#lit-count").textContent(),"15");
-    }
+    assert.equal(await page.locator("#literature").count(),0,"Builder should not append Literature Review");
+    assert.equal(await page.locator('.page-tab[aria-current="page"]').textContent().then(t=>t.includes("Model Builder")),true);
+    assert.equal(await page.locator(".page-tabs").isVisible(),true,"Page tabs must stay visible on mobile");
     if(width<=768){
       assert.equal(await page.locator(".variable-cards").isVisible(),true,"Variable cards hidden at "+width);
       assert.equal(await page.locator(".variable-table").isVisible(),false,"Desktop table visible at "+width);
@@ -114,6 +84,55 @@ try{
       assert.equal(await page.locator("#inspector").isVisible(),true);
       assert.equal(await page.locator(".variable-cards").isVisible(),false);
     }
+
+    const litPage=await browser.newPage({viewport:{width,height:860},deviceScaleFactor:1,isMobile:width<850,hasTouch:width<850});
+    litPage.on("pageerror",e=>{console.error("LITERATURE PAGE ERROR",width,e.message);failures++;});
+    await litPage.goto(address+"literature.html",{waitUntil:"networkidle"});
+    await litPage.locator(".lit-matrix tbody tr").first().waitFor();
+    const litDimensions=await litPage.evaluate(()=>({viewport:innerWidth,root:document.documentElement.scrollWidth}));
+    assert.ok(litDimensions.root<=litDimensions.viewport+2,"Literature page horizontal overflow "+width+": "+JSON.stringify(litDimensions));
+    assert.equal(await litPage.locator("#literature").count(),1);
+    assert.equal(await litPage.locator("#work-area").count(),0,"Literature page must not load the model builder");
+    assert.equal(await litPage.locator('.page-tab[aria-current="page"]').textContent().then(t=>t.includes("Literature Review")),true);
+    assert.equal(await litPage.locator(".page-tabs").isVisible(),true,"Tabs must stay visible on mobile");
+    assert.ok(await litPage.locator(".lit-matrix tbody tr").count()>=12);
+    if(width<=430){
+      const matrix=litPage.locator(".lit-scroller");
+      assert.ok(await matrix.evaluate(x=>x.scrollWidth>x.clientWidth),"Literature matrix should scroll on mobile");
+    }
+    if(width===390||width===1280){
+      await litPage.locator('[data-lit-tab="novelty"]').click();
+      await litPage.locator('[data-claim="adaptation"]').click();
+      assert.ok((await litPage.getByText("SMART, JITAI", {exact:false}).count())>0);
+      await litPage.locator('[data-lit-tab="matrix"]').click();
+      await litPage.locator("#lit-search").fill("Fernandez");
+      assert.equal(await litPage.locator(".lit-matrix tbody tr").count(),1);
+      await litPage.locator('[data-paper="fernandez2019"]').first().click();
+      await litPage.locator("#lit-reading").selectOption("abstract");
+      await litPage.locator("#lit-notes").fill("Catatan QA tentang overlap dengan Implementation Mapping");
+      await litPage.locator("#lit-save").click();
+      await litPage.reload({waitUntil:"networkidle"});
+      assert.equal(await litPage.locator("#lit-reading").inputValue(),"abstract");
+      assert.match(await litPage.locator("#lit-notes").inputValue(),/Catatan QA/);
+      await litPage.locator("#lit-add-toggle").click();
+      await litPage.locator('#lit-add-form [name="title"]').fill("Demo comparison paper");
+      await litPage.locator('#lit-add-form [name="author"]').fill("Researcher");
+      await litPage.locator('#lit-add-form [name="year"]').fill("2025");
+      await litPage.locator('#lit-add-form [name="doi"]').fill("10.9999/aism-demo-only");
+      await litPage.locator('#lit-add-form [name="summary"]').fill("Test summary");
+      await litPage.locator('#lit-add-form [name="overlap"]').fill("Test overlap");
+      await litPage.locator('#lit-add-form [name="caveat"]').fill("Test limitation");
+      await litPage.locator('#lit-add-form button[type="submit"]').click();
+      assert.equal(await litPage.locator("#lit-count").textContent(),"15");
+      await litPage.reload({waitUntil:"networkidle"});
+      assert.equal(await litPage.locator("#lit-count").textContent(),"15");
+    }
+
+    await litPage.screenshot({path:"tests/screenshots/aism-literature-"+width+".png",fullPage:true});
+    await litPage.locator('.page-tab[href="./#builder"]').click();
+    await litPage.locator("#work-area").waitFor();
+    assert.equal(await litPage.locator("#literature").count(),0,"Navigation back to model builder failed");
+    await litPage.close();
     console.log("PASS responsive viewport",width);
     await page.close();
   }

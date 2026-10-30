@@ -4,11 +4,26 @@ import {readFileSync} from "node:fs";
 import {existsSync} from "node:fs";
 const html=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const ui=readFileSync(new URL("../src/ui.mjs",import.meta.url),"utf8");
+const literature=readFileSync(new URL("../literature.html",import.meta.url),"utf8");
 test("HTML references a real ES module entrypoint",()=>{
   assert.match(html,/<script type="module" src="\.\/src\/ui\.mjs"><\/script>/);
   for(const path of ["../src/ui.mjs","../src/core.mjs","../src/domains.mjs","../src/decision.mjs","../src/adaptive.mjs","../src/literature-data.mjs","../src/literature-ui.mjs"]){
     assert.ok(existsSync(new URL(path,import.meta.url)),path);
   }
+});
+test("literature workbench is a separate navigable page, not appended to the builder",()=>{
+  assert.match(html,/href="\.\/literature\.html"/);
+  assert.doesNotMatch(html,/id="literature"/);
+  assert.doesNotMatch(html,/src="\.\/src\/literature-ui\.mjs"/);
+  assert.match(html,/location\.hash==="#literature"/);
+  assert.match(html,/aria-current="page" href="\.\/#builder"/);
+  assert.match(literature,/id="literature"/);
+  assert.match(literature,/src="\.\/src\/literature-ui\.mjs"/);
+  assert.doesNotMatch(literature,/src="\.\/src\/ui\.mjs"/);
+  assert.match(literature,/href="\.\/#builder"/);
+  assert.match(literature,/aria-current="page" href="\.\/literature\.html"/);
+  assert.match(literature,/lit-detail/);
+  assert.match(literature,/Novelty workbench/);
 });
 test("all direct DOM IDs exist in the shell or explicitly rendered templates",()=>{
   const ids=[...ui.matchAll(/\$\("([A-Za-z][A-Za-z0-9-]*)"\)/g)].map(x=>x[1]);

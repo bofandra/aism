@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0B1829">
+  <meta name="description" content="Literature Review AISM: matriks penelitian, pembanding metode, dan hipotesis novelty yang dapat diuji.">
+  <title>AISM Literature Review — Evidence & Novelty Workbench</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./mobile.css">
+  <link rel="stylesheet" href="./literature.css">
+</head>
+<body>
+  <div class="notice"><span class="live-dot"></span> RESEARCH DEMONSTRATOR <span class="notice-right">DATA SINTETIS · MODEL BELUM TERVALIDASI</span></div>
+  <header class="header">
+    <div class="shell head-inner">
+      <a class="identity" href="./"><span class="mark">A<span>.</span></span><span class="brand-copy"><strong>AISM Lab</strong><small>ADAPTIVE INTERVENTION SELECTION METHOD</small></span></a>
+      <nav class="head-nav"><a href="./#builder">Model Builder</a><a href="./literature.html" aria-current="page">Literature Review</a><a href="./#method">Metodologi</a><a href="https://github.com/bofandra/aism" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
+      <span class="version">v0.3 · ADAPTIVE</span>
+    </div>
+  </header>
+  <nav class="page-tabs" aria-label="Halaman AISM Lab"><div class="shell page-tabs-inner"><a class="page-tab" href="./#builder">◈ &nbsp; Model Builder</a><a class="page-tab current" aria-current="page" href="./literature.html">▦ &nbsp; Literature Review</a></div></nav>
+  <main id="main-content">
+    <section class="lit-section" id="literature" aria-labelledby="lit-heading">
+      <div class="shell">
+        <div class="lit-head">
+          <div><span class="eyebrow dark">RESEARCH POSITIONING / LITERATURE REVIEW LAB</span><h2 id="lit-heading">Dari karya terdahulu ke <em>hipotesis novelty AISM.</em></h2>
+          <p class="lit-lead">Jelajahi literatur berdasarkan kemampuan metode, bandingkan pendekatan paling dekat, uji bantahan terhadap kontribusi AISM, dan simpan catatan baca sendiri.</p></div>
+          <div class="lit-stats" aria-label="Ringkasan koleksi"><div class="lit-stat"><strong id="lit-count">14</strong><span>Sumber tercatat</span></div><div class="lit-stat"><strong id="lit-filtered">14</strong><span>Hasil filter</span></div><div class="lit-stat"><strong id="lit-reviewed">0</strong><span>Full text ditelaah</span></div></div>
+        </div>
+        <p class="lit-warning"><strong>Exploratory mapping, bukan systematic review.</strong> Klasifikasi berdasarkan abstrak dan deskripsi penerbit adalah penilaian awal. Ketiadaan tanda fokus dalam matriks <strong>bukan</strong> bukti suatu kemampuan tidak ada. Novelty memerlukan telaah full text, pencarian sistematis, dan evaluasi empiris.</p>
+        <div class="lit-controls">
+          <div class="lit-tabs" role="group" aria-label="Tampilan tinjauan literatur">
+            <button type="button" class="lit-tab lit-tab-active" data-lit-tab="matrix" aria-pressed="true">Matriks metode</button>
+            <button type="button" class="lit-tab" data-lit-tab="papers" aria-pressed="false">Daftar paper</button>
+            <button type="button" class="lit-tab" data-lit-tab="novelty" aria-pressed="false">Novelty workbench</button>
+          </div>
+          <div class="lit-tools"><button id="lit-add-toggle" class="lit-action" type="button">+ Tambah paper</button><button id="lit-export-csv" class="lit-action" type="button">Ekspor CSV</button><button id="lit-export-json" class="lit-primary" type="button">Ekspor riset JSON ↓</button></div>
+        </div>
+        <div id="lit-filter-controls" class="lit-filter-controls">
+          <label>Cari studi, penulis, atau DOI<input id="lit-search" type="search" placeholder="Misalnya Implementation Mapping, CFIR, SMART…" autocomplete="off"></label>
+          <label>Kelompok metode<select id="lit-family"><option value="all">Semua kelompok</option><option value="dsr">Design Science</option><option value="systems">Systems Thinking</option><option value="implementation">Implementation Science</option><option value="adaptive">Adaptive Intervention</option><option value="decision">Decision Analysis</option></select></label>
+          <label>Kemampuan terkait<select id="lit-dimension"><option value="all">Semua dimensi</option><option value="diag">Diagnosis konteks</option><option value="mech">Mekanisme perubahan</option><option value="select">Seleksi strategi</option><option value="sim">Simulasi dinamis</option><option value="adapt">Evaluasi adaptif</option><option value="trace">Jejak bukti</option></select></label>
+        </div>
+        <div class="lit-panel" id="lit-content" aria-live="polite"><p class="lit-empty">Memuat kajian literatur…</p></div>
+        <div class="lit-panel lit-detail" id="lit-detail" aria-label="Detail dan catatan literatur"></div>
+        <div id="lit-add"></div><p id="lit-feedback" class="lit-feedback" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+  <footer><div class="shell"><strong>AISM Lab · Literature Review</strong><span>Research positioning · Exploratory literature mapping · 2026</span><span>© Research demonstrator · Not a systematic review</span></div></footer>
+  <script type="module" src="./src/literature-ui.mjs"></script>
+</body>
+</html>
