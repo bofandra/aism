@@ -1,6 +1,8 @@
 # AISM Lab v0.3 — Explainable Intervention Decision Lab
 
-**Demo:** https://bofandra.github.io/aism/
+**Model Builder:** https://bofandra.github.io/aism/
+
+**Literature Review:** https://bofandra.github.io/aism/literature.html
 
 AISM Lab adalah demonstrator penelitian **Adaptive Intervention Selection Method**: pengguna dapat mendefinisikan variabel, menelusuri hipotesis hubungan, membentuk rumus, dan menguji skenario intervensi. Metode umum sama pada semua kasus; model matematis tiap domain berbeda.
 
