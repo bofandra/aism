@@ -4,3 +4,13 @@
 @media(max-width:850px){.shell{width:min(100% - 30px,1370px)}.intro{display:block;padding:42px 0}.intro-metrics{margin-top:23px;justify-content:space-around}.lab-layout{grid-template-columns:1fr}.stepper{padding:15px}.stepper h2,.stepper>p,.side-promo{display:none}.steps{display:flex;overflow-x:auto}.steps button{min-width:140px}.inspector{grid-column:auto}.head-nav{display:none}.lab-toolbar{gap:12px}.question-strip{flex-wrap:wrap}.method-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:580px){.notice-right{display:none}.notice{padding:9px 15px}.head-inner{min-height:70px}.brand-copy strong{font-size:14px}.brand-copy small{display:none}.mark{width:36px;height:36px;font-size:19px}.version{font-size:8px}.intro h1{font-size:33px}.intro p{font-size:13px}.intro-metrics{padding:15px}.intro-metrics span{font-size:7px}.lab-toolbar,.choose,.mode-switch{width:100%}.choose{flex-wrap:wrap}.choose select{width:100%}.toolbar-actions{width:100%}.toolbar-actions .btn{flex:1}.mode-switch{justify-content:space-between}.question-meta{display:none}.main-panel,.inspector{padding:17px}.workspace-head h2{font-size:19px}.form-grid,.scenario-grid,.grid-2{grid-template-columns:1fr}.method-grid{grid-template-columns:1fr}.bottom-strip,footer .shell{display:block}.bottom-strip a{display:block;margin-top:10px}footer span{display:block;margin-top:9px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+
+/* Site-level workspace tabs: separate builder and literature pages, always available on mobile. */
+.page-tabs{background:#102b3b;border-top:1px solid #234356}
+.page-tabs-inner{display:flex;gap:9px;align-items:center;padding:8px 0;overflow-x:auto;scrollbar-width:thin}
+.page-tab{display:inline-flex;gap:6px;align-items:center;justify-content:center;flex:0 0 auto;min-height:44px;padding:10px 19px;border:1px solid transparent;border-radius:8px;color:#b6d0d5;font-size:12px;font-weight:800;letter-spacing:.1px;transition:background .15s ease}
+.page-tab:hover{color:#fff;background:#1c4654}
+.page-tab.current{color:#0d695e;background:#e4f6ef;border-color:#9cdacb}
+.page-tab:focus-visible{outline:3px solid #4ce1c3;outline-offset:2px}
+@media(max-width:580px){.page-tabs-inner{gap:6px;padding:7px 0}.page-tab{min-height:45px;padding:11px 12px;font-size:12px}.page-tab{flex:1 0 auto}}
