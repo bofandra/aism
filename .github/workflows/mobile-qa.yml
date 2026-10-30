@@ -30,6 +30,8 @@ jobs:
           node --check src/decision.mjs
           node --check src/adaptive.mjs
           node --check src/ui.mjs
+          node --check src/literature-data.mjs
+          node --check src/literature-ui.mjs
           node --test tests/*.test.mjs
       - name: Install Playwright and headless Chromium
         run: |
