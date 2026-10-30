@@ -8,19 +8,20 @@
   <title>AISM Lab v0.3 — Explainable Intervention Decision Lab</title>
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./mobile.css">
+  <link rel="stylesheet" href="./literature.css">
 </head>
 <body>
   <div class="notice"><span class="live-dot"></span> RESEARCH DEMONSTRATOR <span class="notice-right">DATA SINTETIS · MODEL BELUM TERVALIDASI</span></div>
   <header class="header">
     <div class="shell head-inner">
       <a class="identity" href="./"><span class="mark">A<span>.</span></span><span class="brand-copy"><strong>AISM Lab</strong><small>ADAPTIVE INTERVENTION SELECTION METHOD</small></span></a>
-      <nav class="head-nav"><a href="#builder">Model Builder</a><a href="#method">Metodologi</a><a href="https://github.com/bofandra/aism" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
+      <nav class="head-nav"><a href="#builder">Model Builder</a><a href="#literature">Literature Review</a><a href="#method">Metodologi</a><a href="https://github.com/bofandra/aism" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
       <span class="version">v0.3 · ADAPTIVE</span>
     </div>
   </header>
   <main>
     <section class="intro shell">
-      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, hipotesis dan persamaan; diagnosis gap; kaji batas keputusan; bandingkan simulasi dengan hasil aktual. Satu metode, beberapa domain permasalahan.</p><a class="btn btn-primary mobile-start" href="#builder">Mulai simulasi →</a></div>
+      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, hipotesis dan persamaan; diagnosis gap; kaji batas keputusan; bandingkan simulasi dengan hasil aktual. Satu metode, beberapa domain permasalahan.</p><a class="btn btn-primary mobile-start" href="#builder">Mulai simulasi →</a><a class="btn btn-outline mobile-start" href="#literature" style="margin-left:8px">Review novelty ↗</a></div>
       <div class="intro-metrics"><div><strong>06</strong><span>TAHAP INTERAKTIF</span></div><div><strong>03</strong><span>DOMAIN CONTOH</span></div><div><strong>01</strong><span>MESIN MODEL</span></div></div>
     </section>
     <section class="lab-section" id="builder">
@@ -62,6 +63,32 @@
         <div class="bottom-strip"><div><span class="shield">◇</span><strong>Scientific honesty by design.</strong> Tidak ada rekomendasi klinis, akses data pasien, atau klaim kausal otomatis.</div><a href="#method">Lihat prinsip metodologi ↗</a></div>
       </div>
     </section>
+    <section class="lit-section" id="literature" aria-labelledby="lit-heading">
+      <div class="shell">
+        <div class="lit-head">
+          <div><span class="eyebrow dark">RESEARCH POSITIONING / LITERATURE REVIEW LAB</span><h2 id="lit-heading">Dari karya terdahulu ke <em>hipotesis novelty AISM.</em></h2>
+          <p class="lit-lead">Jelajahi literatur berdasarkan kemampuan metode, bandingkan pendekatan paling dekat, uji bantahan terhadap kontribusi AISM, dan simpan catatan baca sendiri.</p></div>
+          <div class="lit-stats" aria-label="Ringkasan koleksi"><div class="lit-stat"><strong id="lit-count">14</strong><span>Sumber tercatat</span></div><div class="lit-stat"><strong id="lit-filtered">14</strong><span>Hasil filter</span></div><div class="lit-stat"><strong id="lit-reviewed">0</strong><span>Full text ditelaah</span></div></div>
+        </div>
+        <p class="lit-warning"><strong>Exploratory mapping, bukan systematic review.</strong> Klasifikasi berdasarkan abstrak dan deskripsi penerbit adalah penilaian awal. Ketiadaan tanda fokus dalam matriks <strong>bukan</strong> bukti suatu kemampuan tidak ada. Novelty memerlukan telaah full text, pencarian sistematis, dan evaluasi empiris.</p>
+        <div class="lit-controls">
+          <div class="lit-tabs" role="group" aria-label="Tampilan tinjauan literatur">
+            <button type="button" class="lit-tab lit-tab-active" data-lit-tab="matrix" aria-pressed="true">Matriks metode</button>
+            <button type="button" class="lit-tab" data-lit-tab="papers" aria-pressed="false">Daftar paper</button>
+            <button type="button" class="lit-tab" data-lit-tab="novelty" aria-pressed="false">Novelty workbench</button>
+          </div>
+          <div class="lit-tools"><button id="lit-add-toggle" class="lit-action" type="button">+ Tambah paper</button><button id="lit-export-csv" class="lit-action" type="button">Ekspor CSV</button><button id="lit-export-json" class="lit-primary" type="button">Ekspor riset JSON ↓</button></div>
+        </div>
+        <div id="lit-filter-controls" class="lit-filter-controls">
+          <label>Cari studi, penulis, atau DOI<input id="lit-search" type="search" placeholder="Misalnya Implementation Mapping, CFIR, SMART…" autocomplete="off"></label>
+          <label>Kelompok metode<select id="lit-family"><option value="all">Semua kelompok</option><option value="dsr">Design Science</option><option value="systems">Systems Thinking</option><option value="implementation">Implementation Science</option><option value="adaptive">Adaptive Intervention</option><option value="decision">Decision Analysis</option></select></label>
+          <label>Kemampuan terkait<select id="lit-dimension"><option value="all">Semua dimensi</option><option value="diag">Diagnosis konteks</option><option value="mech">Mekanisme perubahan</option><option value="select">Seleksi strategi</option><option value="sim">Simulasi dinamis</option><option value="adapt">Evaluasi adaptif</option><option value="trace">Jejak bukti</option></select></label>
+        </div>
+        <div class="lit-panel" id="lit-content" aria-live="polite"><p class="lit-empty">Memuat kajian literatur…</p></div>
+        <div class="lit-panel lit-detail" id="lit-detail" aria-label="Detail dan catatan literatur"></div>
+        <div id="lit-add"></div><p id="lit-feedback" class="lit-feedback" aria-live="polite"></p>
+      </div>
+    </section>
     <section id="method" class="method shell">
       <div class="section-heading"><span class="eyebrow dark">HOW THE METHOD WORKS</span><h2>Model terbuka. Asumsi dapat dilacak.</h2><p>Prosedur AISM berlaku lintas domain. Persamaan, parameter dan dampak intervensi tetap harus dibentuk sesuai konteks dan divalidasi.</p></div>
       <div class="method-grid">
@@ -74,5 +101,6 @@
   </main>
   <footer><div class="shell"><strong>AISM Lab v0.3</strong><span>Design Science Research · Systems Thinking · Synthetic-only prototype · 2026</span><span>© Research demonstrator · No patient data</span></div></footer>
   <script type="module" src="./src/ui.mjs"></script>
+  <script type="module" src="./src/literature-ui.mjs"></script>
 </body>
 </html>
