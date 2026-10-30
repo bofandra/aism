@@ -6,7 +6,7 @@ const html=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const ui=readFileSync(new URL("../src/ui.mjs",import.meta.url),"utf8");
 test("HTML references a real ES module entrypoint",()=>{
   assert.match(html,/<script type="module" src="\.\/src\/ui\.mjs"><\/script>/);
-  for(const path of ["../src/ui.mjs","../src/core.mjs","../src/domains.mjs","../src/decision.mjs","../src/adaptive.mjs"]){
+  for(const path of ["../src/ui.mjs","../src/core.mjs","../src/domains.mjs","../src/decision.mjs","../src/adaptive.mjs","../src/literature-data.mjs","../src/literature-ui.mjs"]){
     assert.ok(existsSync(new URL(path,import.meta.url)),path);
   }
 });
