@@ -10,7 +10,7 @@ AISM Lab adalah demonstrator penelitian **Adaptive Intervention Selection Method
 
 ## Literature Review Lab — interactive novelty mapping (v0.3+)
 
-Section **Literature Review** tersedia di halaman publik melalui anchor `#literature`. Ini adalah **curated exploratory mapping**, bukan systematic/scoping review formal dan **tidak membuktikan kebaruan**.
+**Literature Review** kini berada di **halaman terpisah**: [`literature.html`](https://bofandra.github.io/aism/literature.html), diakses dari dua tab utama yang selalu tersedia di desktop dan ponsel: **Model Builder** dan **Literature Review**. URL lama `/#literature` diarahkan otomatis ke halaman tersebut. Ini tetap merupakan **curated exploratory mapping**, bukan systematic/scoping review formal dan **tidak membuktikan kebaruan**.
 
 - **Matriks 6 dimensi:** diagnosis konteks, mekanisme perubahan, seleksi intervensi, simulasi dinamis, evaluasi adaptif, dan jejak bukti. Tiap paper diberi kode `0 = belum diklasifikasikan sebagai fokus`, `1 = terkait`, `2 = fokus kuat`, dengan tautan DOI asli. **Angka 0 bukan bukti ketidakadaan suatu fitur.** Coding berbasis abstrak/uraian penerbit dan wajib diaudit lewat full text.
 - **Daftar paper terfilter:** filter kelompok metodologi, dimensi, dan pencarian berdasarkan kata kunci, penulis, judul, venue atau DOI.
@@ -101,7 +101,8 @@ Contoh skenario satu minggu: mapping `p=.20` → 74,55%; kapasitas `K=25` → 74
 ## Struktur
 
 ```text
-index.html             # static GitHub Pages shell
+index.html             # dedicated Model Builder page
+literature.html        # dedicated Literature Review / Novelty Workbench page
 styles.css             # responsive research workbench
 src/domains.mjs        # schema, kamus variabel, hipotesis, rumus dan skenario
 src/core.mjs           # parser, unit checker, provenance, validasi dan simulator
