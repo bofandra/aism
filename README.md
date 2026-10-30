@@ -6,6 +6,19 @@ AISM Lab adalah demonstrator penelitian **Adaptive Intervention Selection Method
 
 > **Peringatan ilmiah:** Semua contoh kasus, koefisien, perubahan parameter intervensi, biaya, dan risiko adalah **sintetis**. Mesin dapat memeriksa sintaks, dimensi satuan dan beberapa invarians numerik, namun **tidak membuktikan kausalitas atau efektivitas intervensi**. Tidak ada data pasien, koneksi SATUSEHAT, rekomendasi klinis, atau kebijakan Kemenkes.
 
+## Literature Review Lab — interactive novelty mapping (v0.3+)
+
+Section **Literature Review** tersedia di halaman publik melalui anchor `#literature`. Ini adalah **curated exploratory mapping**, bukan systematic/scoping review formal dan **tidak membuktikan kebaruan**.
+
+- **Matriks 6 dimensi:** diagnosis konteks, mekanisme perubahan, seleksi intervensi, simulasi dinamis, evaluasi adaptif, dan jejak bukti. Tiap paper diberi kode `0 = belum diklasifikasikan sebagai fokus`, `1 = terkait`, `2 = fokus kuat`, dengan tautan DOI asli. **Angka 0 bukan bukti ketidakadaan suatu fitur.** Coding berbasis abstrak/uraian penerbit dan wajib diaudit lewat full text.
+- **Daftar paper terfilter:** filter kelompok metodologi, dimensi, dan pencarian berdasarkan kata kunci, penulis, judul, venue atau DOI.
+- **Novelty Workbench:** tiga **hipotesis kontribusi** (integrasi diagnosis–simulasi–keputusan, evaluasi adaptif tingkat organisasi, transfer prosedur antar-domain). Setiap hipotesis mencantumkan prior work terdekat, argumen bantahan, dan rancangan pengujian empiris.
+- **Research notebook lokal:** catatan untuk masing-masing paper, status pembacaan, penambahan paper baru dengan DOI dan koding mandiri; catatan tersimpan pada browser saja, **bukan** sinkronisasi cloud.
+- **Ekspor JSON dan CSV:** menyimpan seluruh daftar pembanding, coding dimensi, status baca, dan catatan peneliti agar review dapat direproduksi dan dikembangkan.
+- **Tinjauan ilmiah:** Implementation Mapping (Fernandez 2019), CFIR–ERIC (Waltz 2019), SMART/JITAI, System Dynamics, MCDA, dan SELECT-IT 2025 menegaskan bahwa AISM **tidak** dapat mengklaim menemukan diagnosis-ke-intervensi atau adaptasi untuk pertama kalinya. Novelty yang **diusulkan**, bukan dibuktikan, harus diuji sebagai kontribusi integrasi dan kegunaan keputusan dalam konteks fasyankes.
+
+**Protokol review berikutnya yang diperlukan:** definisikan pertanyaan/strategi pencarian (database, query, tanggal), kriteria inklusi-eksklusi, screening dua reviewer, telaah full-text, penilaian kualitas, ekstraksi evidensi dan pembanding langsung. Catat mengapa suatu paper dinilai fokus/terkait beserta halaman dukungan; jangan menyimpulkan tidak adanya penelitian dari matriks sementara.
+
 ## Fitur baru v0.3 — diagnose, decide, adapt
 
 - **Diagnosis eksplisit:** aturan per variabel berisi arah target (minimal/maksimal), nilai ambang, dan provenance. Indikator diberi status `GAP` atau `WITHIN_TARGET` berdasarkan perhitungan deterministik. Semua target bawaan **sintetis** dan dapat diubah (Advanced Mode); gap bukan bukti kausal.
@@ -92,9 +105,13 @@ src/domains.mjs        # schema, kamus variabel, hipotesis, rumus dan skenario
 src/core.mjs           # parser, unit checker, provenance, validasi dan simulator
 src/decision.mjs       # aturan diagnosis dan gerbang keputusan eksplisit
 src/adaptive.mjs       # feedback observasi, deviasi, pratinjau fitting satu parameter
+src/literature-data.mjs # literature corpus, DOI, method coverage, novelty hypotheses
+src/literature-ui.mjs   # evidence matrix, filters, notes, paper addition, CSV/JSON export
+literature.css          # responsive literature workbench
 src/ui.mjs             # guided/advanced editor, inspector, grafik, ekspor/impor
 tests/core.test.mjs    # regression, numerical and safeguards tests
 tests/v03.test.mjs     # diagnosis, decision gates, adaptive calibration tests
+tests/literature.test.mjs # sources, dimension coding, filtering and novelty assumptions
 .github/workflows/pages.yml # Node tests + GitHub Pages deploy
 ```
 
@@ -108,6 +125,8 @@ node --check src/core.mjs
 node --check src/decision.mjs
 node --check src/adaptive.mjs
 node --check src/ui.mjs
+node --check src/literature-data.mjs
+node --check src/literature-ui.mjs
 ```
 
 Buka `index.html` melalui HTTP server statis lokal (ES modules tidak selalu didukung ketika dibuka dengan `file://`).
