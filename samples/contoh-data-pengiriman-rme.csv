@@ -1,0 +1,7 @@
+periode,jenis_layanan,total_eligible,total_terkirim,total_lengkap,total_gagal_validasi
+2026-08,laboratorium,1200,1050,940,45
+2026-09,laboratorium,1260,1100,950,70
+2026-10,laboratorium,1300,1090,900,95
+2026-08,radiologi,480,450,415,16
+2026-09,radiologi,510,484,444,20
+2026-10,radiologi,530,496,452,19
