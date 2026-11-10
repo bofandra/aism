@@ -30,7 +30,6 @@
   const percentage = (v) => Number.isFinite(v) ? (v*100).toLocaleString("id-ID",{maximumFractionDigits:1})+"%" : "—";
   const integer = (v) => Number(v).toLocaleString("id-ID");
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const medianLabel = (v) => v >= .9 ? "Relatif tinggi" : v >= .75 ? "Perlu ditingkatkan" : "Kesenjangan besar";
   const sum = (items, name) => items.reduce((acc,row)=>acc+row[name],0);
   const totals = (items) => {
     const eligible=sum(items,"total_eligible"), sent=sum(items,"total_terkirim");
@@ -65,6 +64,9 @@
     const headings=matrix[0].map(v=>v.trim().toLowerCase());
     const missing=REQUIRED.filter(field=>!headings.includes(field));
     if(missing.length)throw Error("Kolom wajib tidak ada: "+missing.join(", "));
+    const prohibited=["nik","nama_pasien","nama_pasien_lengkap","no_rm","nomor_rekam_medis","mrn","patient_id","pasien_id","alamat_pasien"];
+    const found=headings.filter(h=>prohibited.includes(h));
+    if(found.length)throw Error("Kolom identitas pasien tidak diizinkan: "+found.join(", "));
     const seen=new Set();
     return matrix.slice(1).map((cells,i)=>{
       const item={}; headings.forEach((h,j)=>item[h]=(cells[j]||"").trim());
@@ -95,7 +97,7 @@
   }
   function showStage(num) {
     if(num>1 && !rows.length)return;
-    if(num===3 && activeStage!==3 && num===3)renderRecommendations();
+    if(num===3)renderRecommendations();
     activeStage=num;
     document.querySelectorAll(".stage").forEach(node=>node.classList.toggle("active",node.id==="stage-"+["data","assessment","results"][num-1]));
     document.querySelectorAll("[data-nav]").forEach(node=>{
@@ -133,7 +135,7 @@
       rows=parsed;sourceName=name;answers={};assessmentLevel=1;
       setMessage("File valid: "+parsed.length+" baris data agregat berhasil diproses di browser.","ok");
       renderData();renderBase();renderDeep();
-    }catch(err){setMessage(err.message,"error")}
+    }catch(err){rows=[];sourceName="";answers={};assessmentLevel=1;renderData();renderBase();renderDeep();setMessage(err.message,"error")}
   }
   function questionHtml(q,prefix) {
     const options=q.binary?["ya","tidak","tidak_tahu"]:["ya","sebagian","tidak","tidak_tahu"];
@@ -173,7 +175,9 @@
   }
   function add(c,points,reason){c.score+=points;c.reasons.push(reason)}
   function evaluate(){
-    const m=totals(rows);const a=answers;const candidates=[];
+    const m=totals(rows);const a={...answers};const candidates=[];
+    const activeDeep=new Set(requiredDeep().map(q=>q.id));
+    DEEP.forEach(q=>{if(!activeDeep.has(q.id))delete a[q.id]});
     let c=makeCandidate("delivery","Pulihkan alur pengiriman RME",["B2","B3"],"Telusuri titik gagal dari antrean SIMRS → integrasi → respons SATUSEHAT; uji kirim ulang dan lakukan rekonsiliasi episode.","Rasio terkirim / eligible per layanan dan per periode");
     if(m.sentRate<.9)add(c,m.sentRate<.75?5:3,"Data: baru "+percentage(m.sentRate)+" episode eligible terkirim (ambang eksploratif 90%).");
     if(a.integration==="ya")add(c,3,"Pendalaman: gangguan API, antrean atau retry dilaporkan.");
