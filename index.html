@@ -3,78 +3,113 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0B1829">
-  <meta name="description" content="AISM Lab v0.3: bangun variabel, hipotesis mekanisme, persamaan dan simulasi intervensi secara transparan.">
-  <title>AISM Lab v0.3 — Explainable Intervention Decision Lab</title>
-  <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./mobile.css">
+  <meta name="theme-color" content="#2352d4">
+  <meta name="description" content="AISM Lite: unggah data agregat pengiriman RME SATUSEHAT, isi assessment berjenjang, dan dapatkan opsi prioritas perbaikan berbasis draf CLD.">
+  <title>AISM — Prioritas Perbaikan RME SATUSEHAT</title>
+  <link rel="stylesheet" href="./simple.css">
 </head>
 <body>
-  <div class="notice"><span class="live-dot"></span> RESEARCH DEMONSTRATOR <span class="notice-right">DATA SINTETIS · MODEL BELUM TERVALIDASI</span></div>
+  <div class="topline"><div class="shell">AISM RESEARCH DEMONSTRATOR · ATURAN PRIORITAS &amp; CLD BELUM TERVALIDASI</div></div>
   <header class="header">
-    <div class="shell head-inner">
-      <a class="identity" href="./"><span class="mark">A<span>.</span></span><span class="brand-copy"><strong>AISM Lab</strong><small>ADAPTIVE INTERVENTION SELECTION METHOD</small></span></a>
-      <nav class="head-nav"><a href="#builder">Model Builder</a><a href="./literature.html">Literature Review</a><a href="#method">Metodologi</a><a href="https://github.com/bofandra/aism" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
-      <span class="version">v0.3 · ADAPTIVE</span>
+    <div class="shell header-inner">
+      <a href="./" class="brand" aria-label="AISM beranda">
+        <span class="brand-mark">A.</span>
+        <span><strong>AISM</strong><small>Adaptive Intervention Selection Method</small></span>
+      </a>
+      <nav class="nav" aria-label="Navigasi tambahan">
+        <a href="#workflow">Assessment</a>
+        <a href="./literature.html">Literatur</a>
+        <a href="./legacy.html" title="Model Builder eksperimen sebelumnya">Lab riset lama</a>
+      </nav>
     </div>
   </header>
-  <nav class="page-tabs" aria-label="Halaman AISM Lab"><div class="shell page-tabs-inner"><a class="page-tab current" aria-current="page" href="./#builder">◈ &nbsp; Model Builder</a><a class="page-tab" href="./literature.html">▦ &nbsp; Literature Review</a></div></nav>
   <main>
-    <section class="intro shell">
-      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, hipotesis dan persamaan; diagnosis gap; kaji batas keputusan; bandingkan simulasi dengan hasil aktual. Satu metode, beberapa domain permasalahan.</p><a class="btn btn-primary mobile-start" href="#builder">Mulai simulasi →</a><a class="btn btn-outline mobile-start" href="./literature.html" style="margin-left:8px">Review novelty ↗</a></div>
-      <div class="intro-metrics"><div><strong>06</strong><span>TAHAP INTERAKTIF</span></div><div><strong>03</strong><span>DOMAIN CONTOH</span></div><div><strong>01</strong><span>MESIN MODEL</span></div></div>
+    <section class="shell hero">
+      <div>
+        <span class="eyebrow">SATUSEHAT · LABORATORIUM &amp; RADIOLOGI</span>
+        <h1>Ketahui apa yang paling perlu diperbaiki dari pengiriman RME.</h1>
+        <p>Unggah data agregat pengiriman, jawab pertanyaan sesuai kondisi fasyankes, lalu lihat opsi prioritas tindakan beserta alasan dan keterkaitannya dengan draf Causal Loop Diagram (CLD).</p>
+      </div>
+      <aside class="hero-note">
+        <strong>Bagaimana AISM bekerja?</strong>
+        Memadukan indikator data dan penilaian operasional. Rekomendasi adalah hipotesis awal untuk ditinjau, bukan keputusan otomatis atau penilaian kinerja rumah sakit.
+      </aside>
     </section>
-    <section class="lab-section" id="builder">
-      <div class="shell">
-        <div class="lab-toolbar">
-          <div class="choose"><label for="domain">PILIH STUDI KASUS</label><select id="domain" aria-label="Pilih domain contoh"><option value="satusehat">SATUSEHAT · Diagnostik</option><option value="education">Pendidikan · Retensi Mahasiswa</option><option value="logistics">Logistik · Pengiriman Tepat Waktu</option></select></div>
-          <div class="mode-switch"><span>BUILDER MODE</span><div class="segmented"><button id="guided" class="selected" type="button" aria-pressed="true">Guided</button><button id="advanced" type="button" aria-pressed="false">Advanced</button></div></div>
-          <div class="toolbar-actions"><button id="reset" class="btn btn-outline" type="button">↺ Reset kasus</button><button id="export" class="btn btn-primary" type="button">Ekspor model ↓</button></div>
-        </div>
-        <div class="question-strip"><span class="question-index">RESEARCH QUESTION</span><strong id="question"></strong><span class="question-meta" id="case-sector"></span></div>
-        <div class="lab-layout">
-          <aside class="stepper panel" aria-label="Tahap AISM">
-            <span class="section-kicker">WORKFLOW / v0.3</span>
-            <h2>Bangun model</h2>
-            <p>Ikuti proses dari variabel sampai model yang dapat dihitung.</p>
-            <div class="mobile-step-progress" id="mobile-step-progress" aria-live="polite">Tahap 1 dari 6</div>
-            <div class="steps">
-              <button type="button" data-step="variables" class="active"><span>01</span><span><strong>Variabel</strong><small>Apa yang diukur?</small></span></button>
-              <button type="button" data-step="mechanisms"><span>02</span><span><strong>Mekanisme</strong><small>Bagaimana saling terkait?</small></span></button>
-              <button type="button" data-step="formulas"><span>03</span><span><strong>Formula Lab</strong><small>Mengapa rumus demikian?</small></span></button>
-              <button type="button" data-step="diagnosis"><span>04</span><span><strong>Diagnosis</strong><small>Mana gap berbukti?</small></span></button>
-              <button type="button" data-step="interventions"><span>05</span><span><strong>Keputusan</strong><small>Mana yang layak dikaji?</small></span></button>
-              <button type="button" data-step="evaluation"><span>06</span><span><strong>Adaptasi</strong><small>Belajar dari hasil?</small></span></button>
+    <div class="shell">
+      <nav class="workflow" id="workflow" aria-label="Tahapan AISM">
+        <button type="button" class="step" data-nav="1" aria-current="step"><span class="num">1</span><span><strong>Unggah data</strong><small>Format CSV &amp; pemeriksaan</small></span></button>
+        <button type="button" class="step" data-nav="2"><span class="num">2</span><span><strong>Assessment</strong><small>Dasar → pendalaman</small></span></button>
+        <button type="button" class="step" data-nav="3"><span class="num">3</span><span><strong>Opsi prioritas</strong><small>Alasan &amp; tindak lanjut</small></span></button>
+      </nav>
+      <section class="panel">
+        <div class="stage active" id="stage-data">
+          <div class="stage-head">
+            <div><span class="stage-tag">TAHAP 01 / DATA</span><h2>Unggah data pengiriman RME</h2><p>Gunakan data agregat per bulan dan layanan. Mulai dari template contoh, lalu ganti angkanya dengan data fasyankes.</p></div>
+            <span class="pill">CSV · tanpa server</span>
+          </div>
+          <div class="upload-box">
+            <div class="upload-icon" aria-hidden="true">↥</div>
+            <h3>Masukkan file CSV</h3>
+            <p>Kolom wajib: periode, jenis layanan, eligible, terkirim, lengkap, dan gagal validasi. Ukuran maksimum 2 MB.</p>
+            <div class="upload-actions">
+              <label class="btn primary file-label" role="button" tabindex="0">Pilih file CSV <input id="file-input" type="file" accept=".csv,text/csv" aria-label="Unggah CSV data agregat pengiriman RME"></label>
+              <a class="btn secondary" href="./samples/contoh-data-pengiriman-rme.csv" download>↓ Unduh format contoh</a>
+              <button class="btn" type="button" id="sample-data">Gunakan data contoh</button>
             </div>
-            <div class="side-promo"><span>METODE LENGKAP</span><p>Problem Definition → Variables → Mechanisms → Formulation → Diagnosis → Decision → Adaptive Evaluation</p><small>Problem Definition melekat pada studi kasus; Simulation terintegrasi dalam tahap keputusan pada v0.3.</small></div>
-          </aside>
-          <section class="main-panel panel" aria-live="polite">
-            <div class="workspace-head"><span class="section-kicker" id="step-tag">STEP 01 / VARIABLE IDENTIFICATION</span><h2 id="step-title">Variabel apa yang membentuk masalah?</h2><p id="step-description"></p></div>
-            <div id="work-area"></div>
-            <div class="stage-nav"><button id="prev" class="btn btn-outline" type="button">← Sebelumnya</button><button id="next" class="btn btn-primary" type="button">Lanjutkan →</button></div>
-          </section>
-          <button type="button" id="inspector-backdrop" class="inspector-backdrop" aria-label="Tutup panel penjelasan" tabindex="-1"></button>
-          <aside class="inspector panel" id="inspector" aria-label="Penjelasan metodologis" tabindex="-1">
-            <div class="inspector-head"><button type="button" id="inspector-close" class="inspector-close" aria-label="Tutup penjelasan">✕ <span>Tutup</span></button><span class="section-kicker">METHOD INSPECTOR</span><h2 id="inspector-heading">Explain This Model <span>✳</span></h2><p>Klik suatu variabel, hubungan atau rumus untuk menelusuri dasarnya.</p></div>
-            <div id="inspector-body"></div>
-          </aside>
+            <div id="data-feedback" role="status" aria-live="polite" class="feedback"></div>
+          </div>
+          <div class="guidance"><strong>Perlindungan data:</strong> jangan unggah nama pasien, NIK, nomor rekam medis, rincian per pasien, atau data rahasia. File diproses pada browser dan tidak dikirim ke server AISM. Untuk Excel, simpan dahulu sebagai CSV UTF-8.</div>
+          <div id="data-summary" class="hide">
+            <div class="stage-head" style="margin-top:24px;margin-bottom:8px"><div><h3 class="mini-title">Ringkasan data</h3><p id="source-name"></p></div><span class="pill" id="period-range"></span></div>
+            <div id="metric-grid" class="metric-grid"></div>
+            <h3 class="subheading">Perbandingan per jenis layanan</h3>
+            <div class="table-wrap">
+              <table><thead><tr><th>Layanan</th><th>Eligible</th><th>Terkirim / eligible</th><th>Lengkap / eligible</th><th>Gagal validasi</th></tr></thead><tbody id="service-table"></tbody></table>
+            </div>
+            <p class="helper">Definisi: eligible = episode yang wajib dikirim; terkirim = episode dengan pengiriman berhasil; lengkap = episode dengan komponen data yang disepakati terpenuhi; gagal validasi = episode unik dengan kesalahan validasi. Jumlah gagal validasi bisa tumpang tindih dengan kategori lainnya dan tidak dijumlahkan sebagai episode tambahan.</p>
+          </div>
+          <div class="actions"><span class="progress">Langkah 1 dari 3</span><button class="btn primary" type="button" id="next-to-assessment" disabled>Lanjut ke assessment →</button></div>
         </div>
-        <div id="alerts" aria-live="polite"></div>
-        <div class="bottom-strip"><div><span class="shield">◇</span><strong>Scientific honesty by design.</strong> Tidak ada rekomendasi klinis, akses data pasien, atau klaim kausal otomatis.</div><a href="#method">Lihat prinsip metodologi ↗</a></div>
-      </div>
-    </section>
-    <section id="method" class="method shell">
-      <div class="section-heading"><span class="eyebrow dark">HOW THE METHOD WORKS</span><h2>Model terbuka. Asumsi dapat dilacak.</h2><p>Prosedur AISM berlaku lintas domain. Persamaan, parameter dan dampak intervensi tetap harus dibentuk sesuai konteks dan divalidasi.</p></div>
-      <div class="method-grid">
-        <article><span>01 / DEFINE</span><h3>Definisikan outcome</h3><p>Populasi, satuan dan batas sistem harus jelas sebelum membuat skor atau persamaan.</p></article>
-        <article><span>02 / EXPLAIN</span><h3>Bangun hipotesis</h3><p>Hubungan variabel disertai justifikasi, status bukti, dan kemungkinan mekanisme alternatif.</p></article>
-        <article><span>03 / FORMULATE</span><h3>Uji persamaan</h3><p>Parser aman, pemeriksaan satuan dan hasil numerik memberi fondasi untuk evaluasi lebih lanjut.</p></article>
-        <article><span>04 / LEARN</span><h3>Evaluasi dan adaptasi</h3><p>Keputusan tetap ditinjau manusia; hasil aktual dapat dicatat, lalu parameter diperbarui hanya dengan persetujuan eksplisit.</p></article>
-      </div>
-    </section>
+        <div class="stage" id="stage-assessment">
+          <div class="stage-head">
+            <div><span class="stage-tag">TAHAP 02 / KONDISI OPERASIONAL</span><h2 id="assessment-title">Assessment dasar</h2><p id="assessment-desc">Jawab sesuai kondisi nyata. Jawaban yang belum diketahui boleh dilewati.</p></div>
+            <span class="pill" id="assess-progress">Dasar 0/6</span>
+          </div>
+          <div class="assess-note">Pertanyaan ini bukan audit kepatuhan. Jawaban digunakan untuk memilih penelusuran lanjutan dan menjelaskan hipotesis tindakan. Tidak ada nilai kelulusan.</div>
+          <div id="base-block">
+            <h3 class="mini-title">A. Kondisi dasar</h3><p class="mini-desc">Enam pertanyaan singkat tentang pemantauan, mutu kode, SDM, eskalasi, perubahan sistem, dan dukungan pengelola.</p>
+            <div id="base-questions"></div>
+          </div>
+          <div id="deep-block" class="hide">
+            <h3 class="mini-title">B. Pendalaman sesuai hasil</h3>
+            <p class="mini-desc">Tidak semua pertanyaan muncul. Sistem memilih yang relevan berdasarkan indikator dan jawaban tahap A. <span id="deep-count"></span></p>
+            <div id="deep-questions"></div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="back-to-data" type="button">← Kembali ke data</button>
+            <button class="btn primary" id="to-deep" type="button">Lanjut ke pendalaman →</button>
+            <button class="btn hide" id="back-to-base" type="button">← Pertanyaan dasar</button>
+            <button class="btn primary hide" id="to-results" type="button">Lihat opsi prioritas →</button>
+          </div>
+        </div>
+        <div class="stage" id="stage-results">
+          <div class="stage-head">
+            <div><span class="stage-tag">TAHAP 03 / HASIL</span><h2>Prioritas tindakan untuk ditinjau</h2><p>Urutan ditentukan dengan aturan awal yang transparan dari data dan assessment; bukan estimasi besarnya dampak atau pembuktian hubungan sebab-akibat.</p></div>
+            <span class="pill" id="result-data-meta"></span>
+          </div>
+          <div class="scorecard" id="result-summary"></div>
+          <div id="recommendations" class="result-list"></div>
+          <div id="more-recommendations"></div>
+          <div class="guidance"><strong>Dasar draf CLD:</strong> R1 pemantauan dan pembelajaran; R2 penumpukan masalah; R3 kode dan pekerjaan ulang; R4 manfaat data dan dukungan; R5 beban kerja; B1 dorongan kepatuhan; B2 perubahan sistem; B3 eskalasi masalah. Mekanisme ini adalah hipotesis hasil sintesis awal wawancara/GMB yang masih memerlukan member checking, validasi, dan kalibrasi. Ambang 90% dan 5% hanya nilai demonstrasi, bukan target regulasi.</div>
+          <div class="actions">
+            <button class="btn" type="button" id="edit-assessment">← Perbaiki assessment</button>
+            <div style="display:flex;gap:9px;flex-wrap:wrap"><button class="btn secondary" type="button" id="download-report">↓ Unduh ringkasan JSON</button><button class="btn primary" type="button" id="print-report">Cetak / simpan PDF</button></div>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
-  <footer><div class="shell"><strong>AISM Lab v0.3</strong><span>Design Science Research · Systems Thinking · Synthetic-only prototype · 2026</span><span>© Research demonstrator · No patient data</span></div></footer>
-  <script type="module" src="./src/ui.mjs"></script>
-  <script>if(location.hash==="#literature")location.replace("./literature.html");</script>
+  <footer class="footer"><div class="shell"><span>AISM Lite · Demonstrator penelitian, bukan produk klinis atau sistem penilaian resmi.</span><span>Data diproses lokal · <a href="./legacy.html">Lab eksperimen</a> · <a href="./literature.html">Literatur</a></span></div></footer>
+  <script src="./simple.js" defer></script>
 </body>
 </html>
