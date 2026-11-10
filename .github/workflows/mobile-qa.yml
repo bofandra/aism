@@ -27,6 +27,7 @@ jobs:
           node-version: "22"
       - name: Unit and syntax regression tests
         run: |
+          node --check simple.js
           node --check src/decision.mjs
           node --check src/adaptive.mjs
           node --check src/ui.mjs
