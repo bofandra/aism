@@ -1,7 +1,7 @@
-periode,jenis_layanan,total_eligible,total_terkirim,total_lengkap,total_gagal_validasi
-2026-08,laboratorium,1200,1050,940,45
-2026-09,laboratorium,1260,1100,950,70
-2026-10,laboratorium,1300,1090,900,95
-2026-08,radiologi,480,450,415,16
-2026-09,radiologi,510,484,444,20
-2026-10,radiologi,530,496,452,19
+periode,jenis_layanan,total_order,not_yet_eligible,excluded_order,unverified_linkage,eligible_mature,complete_core,complete_strict,incomplete_with_downstream,completed_without_result,no_downstream_evidence
+2026-08,laboratorium,1400,90,20,0,1290,1000,900,130,90,70
+2026-09,laboratorium,1450,100,20,0,1330,970,890,170,95,95
+2026-10,laboratorium,1500,110,20,0,1370,940,860,200,110,120
+2026-08,radiologi,550,45,5,0,500,440,400,30,15,15
+2026-09,radiologi,590,50,5,0,535,470,430,30,20,15
+2026-10,radiologi,620,55,5,0,560,485,450,40,20,15
