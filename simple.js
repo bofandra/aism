@@ -67,6 +67,8 @@
     const prohibited=["nik","nama_pasien","nama_pasien_lengkap","no_rm","nomor_rekam_medis","mrn","patient_id","pasien_id","alamat_pasien"];
     const found=headings.filter(h=>prohibited.includes(h));
     if(found.length)throw Error("Kolom identitas pasien tidak diizinkan: "+found.join(", "));
+    const extra=headings.filter(h=>h && !REQUIRED.includes(h));
+    if(extra.length)throw Error("Gunakan hanya kolom template agregat. Kolom tambahan: "+extra.join(", "));
     const seen=new Set();
     return matrix.slice(1).map((cells,i)=>{
       const item={}; headings.forEach((h,j)=>item[h]=(cells[j]||"").trim());
@@ -119,7 +121,7 @@
       ["Lengkap",percentage(m.completeRate),integer(m.complete)+" dari "+integer(m.eligible)],
       ["Gagal validasi",integer(m.failed),percentage(m.failRate)+" dari episode eligible"]
     ].map(v=>'<div class="metric"><span class="label">'+v[0]+'</span><strong>'+v[1]+'</strong><small>'+v[2]+'</small></div>').join("");
-    const services=["laboratorium","radiologi"].map(name=>({name, ...totals(rows.filter(r=>r.jenis_layanan===name))}));
+    const services=["laboratorium","radiologi"].map(name=>({name, ...totals(rows.filter(r=>r.jenis_layanan===name))})).filter(s=>s.eligible>0);
     el("service-table").innerHTML=services.map(s=>'<tr><td><strong>'+s.name+'</strong></td><td>'+integer(s.eligible)+'</td><td>'+percentage(s.sentRate)+'</td><td>'+percentage(s.completeRate)+'</td><td>'+integer(s.failed)+'</td></tr>').join("");
     el("period-range").textContent="Periode "+rows.map(r=>r.periode).sort()[0]+" s.d. "+rows.map(r=>r.periode).sort().at(-1);
   }
