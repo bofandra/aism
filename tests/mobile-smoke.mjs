@@ -24,7 +24,7 @@ try{
   for(const width of [320,360,390,430,768,1280]){
     const page=await browser.newPage({viewport:{width,height:860},deviceScaleFactor:1,isMobile:width<850,hasTouch:width<850});
     page.on("pageerror",e=>{console.error("PAGE ERROR",width,e.message);failures++;});
-    await page.goto(address,{waitUntil:"networkidle"});
+    await page.goto(address+"legacy.html",{waitUntil:"networkidle"});
     await page.locator("#work-area").waitFor();
     await page.screenshot({path:"tests/screenshots/aism-"+width+".png",fullPage:true});
     const dimensions=await page.evaluate(()=>({viewport:innerWidth,body:document.body.scrollWidth,root:document.documentElement.scrollWidth}));
@@ -129,10 +129,33 @@ try{
     }
 
     await litPage.screenshot({path:"tests/screenshots/aism-literature-"+width+".png",fullPage:true});
-    await litPage.locator('.page-tab[href="./#builder"]').click();
-    await litPage.locator("#work-area").waitFor();
-    assert.equal(await litPage.locator("#literature").count(),0,"Navigation back to model builder failed");
+    await litPage.locator('.page-tab[href="./"]').click();
+    await litPage.locator("#stage-data").waitFor();
+    assert.equal(await litPage.locator("#literature").count(),0,"Navigation back to AISM Lite failed");
     await litPage.close();
+    const litePage=await browser.newPage({viewport:{width,height:860},deviceScaleFactor:1,isMobile:width<850,hasTouch:width<850});
+    litePage.on("pageerror",e=>{console.error("AISM LITE PAGE ERROR",width,e.message);failures++;});
+    await litePage.goto(address,{waitUntil:"networkidle"});
+    assert.equal(await litePage.locator("#stage-data").isVisible(),true,"Lite landing page missing");
+    await litePage.locator("#sample-data").click();
+    await litePage.locator("#data-summary").waitFor({state:"visible"});
+    assert.equal(await litePage.locator("#service-table tr").count(),2);
+    await litePage.locator("#next-to-assessment").click();
+    assert.equal(await litePage.locator("#base-questions .question").count(),6);
+    await litePage.locator('input[data-answer="monitor"][value="tidak"]').check();
+    await litePage.locator('input[data-answer="mapping"][value="sebagian"]').check();
+    await litePage.locator('input[data-answer="capacity"][value="tidak"]').check();
+    await litePage.locator('input[data-answer="change"][value="ya"]').check();
+    await litePage.locator("#to-deep").click();
+    assert.ok((await litePage.locator("#deep-questions .question").count())>=3,"Contextual questions did not appear");
+    await litePage.locator('input[data-answer="backlog"][value="ya"]').check();
+    await litePage.locator("#to-results").click();
+    assert.ok((await litePage.locator("#recommendations .result-card").count())>=1);
+    assert.match(await litePage.locator("#recommendations").textContent(),/CLD/);
+    const liteDimensions=await litePage.evaluate(()=>({viewport:innerWidth,root:document.documentElement.scrollWidth}));
+    assert.ok(liteDimensions.root<=liteDimensions.viewport+2,"Lite horizontal overflow "+width+": "+JSON.stringify(liteDimensions));
+    await litePage.screenshot({path:"tests/screenshots/aism-lite-"+width+".png",fullPage:true});
+    await litePage.close();
     console.log("PASS responsive viewport",width);
     await page.close();
   }
