@@ -56,7 +56,7 @@ test("all direct Lite DOM IDs exist in the Lite document",()=>{
 });
 
 test("scientific disclaimers are available without JavaScript",()=>{
-  assert.match(lite,/ATURAN PRIORITAS &amp; CLD BELUM TERVALIDASI/);
+  assert.match(lite,/HIPOTESIS CLD BELUM TERVALIDASI KAUSAL/);
   assert.match(lite,/bukan bukti pemeriksaan klinis tidak dilakukan/);
   assert.match(legacy,/DATA SINTETIS/);
   assert.match(legacy,/Scientific honesty by design/);
