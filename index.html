@@ -4,87 +4,78 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#2352d4">
-  <meta name="description" content="AISM Lite: unggah data agregat pengiriman RME SATUSEHAT, isi assessment berjenjang, dan dapatkan opsi prioritas perbaikan berbasis draf CLD.">
-  <title>AISM — Prioritas Perbaikan RME SATUSEHAT</title>
+  <meta name="description" content="AISM Lite: diagnosis berbasis episode diagnostik dan assessment berjenjang untuk prioritas perbaikan SATUSEHAT.">
+  <title>AISM Lite — Prioritas Kelengkapan Diagnostik SATUSEHAT</title>
   <link rel="stylesheet" href="./simple.css">
 </head>
 <body>
-  <div class="topline"><div class="shell">AISM RESEARCH DEMONSTRATOR · ATURAN PRIORITAS &amp; CLD BELUM TERVALIDASI</div></div>
-  <header class="header">
-    <div class="shell header-inner">
-      <a href="./" class="brand" aria-label="AISM beranda">
-        <span class="brand-mark">A.</span>
-        <span><strong>AISM</strong><small>Adaptive Intervention Selection Method</small></span>
-      </a>
-      <nav class="nav" aria-label="Navigasi tambahan">
-        <a href="#workflow">Assessment</a>
-        <a href="./literature.html">Literatur</a>
-        <a href="./legacy.html" title="Model Builder eksperimen sebelumnya">Lab riset lama</a>
-      </nav>
-    </div>
-  </header>
+  <div class="topline"><div class="shell">AISM RESEARCH DEMONSTRATOR · HIPOTESIS CLD BELUM TERVALIDASI KAUSAL</div></div>
+  <header class="header"><div class="shell header-inner">
+    <a class="brand" href="./"><span class="brand-mark">A.</span><span><strong>AISM Lite</strong><small>Adaptive Intervention Selection Method</small></span></a>
+    <nav class="nav" aria-label="Navigasi utama"><a href="#workflow">Assessment</a><a href="./literature.html">Literatur</a><a href="./legacy.html">Lab riset lama</a></nav>
+  </div></header>
   <main>
     <section class="shell hero">
-      <div>
-        <span class="eyebrow">SATUSEHAT · LABORATORIUM &amp; RADIOLOGI</span>
-        <h1>Ketahui apa yang paling perlu diperbaiki dari pengiriman RME.</h1>
-        <p>Unggah data agregat pengiriman, jawab pertanyaan sesuai kondisi fasyankes, lalu lihat opsi prioritas tindakan beserta alasan dan keterkaitannya dengan draf Causal Loop Diagram (CLD).</p>
+      <div><span class="eyebrow">SATUSEHAT · LABORATORIUM &amp; RADIOLOGI</span>
+        <h1>Dari bukti kelengkapan diagnostik ke opsi perbaikan.</h1>
+        <p>Unggah ringkasan episode FHIR, isi assessment sesuai kondisi fasilitas, lalu tinjau pilihan tindakan yang menjelaskan alasan, ketidakpastian, dan kaitannya dengan CLD.</p>
       </div>
-      <aside class="hero-note">
-        <strong>Bagaimana AISM bekerja?</strong>
-        Memadukan indikator data dan penilaian operasional. Rekomendasi adalah hipotesis awal untuk ditinjau, bukan keputusan otomatis atau penilaian kinerja rumah sakit.
+      <aside class="hero-note"><strong>Bukan dashboard keberhasilan API</strong>
+        Unit analisis adalah satu episode diagnostik berbasis satu ServiceRequest. Ketidakadaan hasil di SATUSEHAT bukan bukti pemeriksaan klinis tidak dilakukan.
       </aside>
     </section>
     <div class="shell">
-      <nav class="workflow" id="workflow" aria-label="Tahapan AISM">
-        <button type="button" class="step" data-nav="1" aria-current="step"><span class="num">1</span><span><strong>Unggah data</strong><small>Format CSV &amp; pemeriksaan</small></span></button>
+      <nav class="workflow" id="workflow" aria-label="Tiga langkah AISM">
+        <button type="button" class="step" data-nav="1" aria-current="step"><span class="num">1</span><span><strong>Unggah data</strong><small>Validasi episode &amp; tren</small></span></button>
         <button type="button" class="step" data-nav="2"><span class="num">2</span><span><strong>Assessment</strong><small>Dasar → pendalaman</small></span></button>
-        <button type="button" class="step" data-nav="3"><span class="num">3</span><span><strong>Opsi prioritas</strong><small>Alasan &amp; tindak lanjut</small></span></button>
+        <button type="button" class="step" data-nav="3"><span class="num">3</span><span><strong>Opsi prioritas</strong><small>Bukti, CLD &amp; verifikasi</small></span></button>
       </nav>
       <section class="panel">
         <div class="stage active" id="stage-data">
-          <div class="stage-head">
-            <div><span class="stage-tag">TAHAP 01 / DATA</span><h2>Unggah data pengiriman RME</h2><p>Gunakan data agregat per bulan dan layanan. Mulai dari template contoh, lalu ganti angkanya dengan data fasyankes.</p></div>
-            <span class="pill">CSV · tanpa server</span>
-          </div>
+          <div class="stage-head"><div>
+            <span class="stage-tag">TAHAP 01 / PROFIL EPISODE</span>
+            <h2>Unggah data kelengkapan diagnostik</h2>
+            <p>Gunakan data agregat per bulan dan layanan berdasarkan episode ServiceRequest. Data wajib sudah dikelompokkan menurut status dan aturan pematangan yang jelas.</p>
+          </div><span class="pill">CSV agregat · tanpa data pasien</span></div>
           <div class="upload-box">
             <div class="upload-icon" aria-hidden="true">↥</div>
-            <h3>Masukkan file CSV</h3>
-            <p>Kolom wajib: periode, jenis layanan, eligible, terkirim, lengkap, dan gagal validasi. Ukuran maksimum 2 MB.</p>
+            <h3>Gunakan format agregat penelitian</h3>
+            <p>CSV UTF-8, satu baris per kombinasi bulan × layanan, maksimum 2 MB.</p>
             <div class="upload-actions">
-              <label class="btn primary file-label" role="button" tabindex="0">Pilih file CSV <input id="file-input" type="file" accept=".csv,text/csv" aria-label="Unggah CSV data agregat pengiriman RME"></label>
-              <a class="btn secondary" href="./samples/contoh-data-pengiriman-rme.csv" download>↓ Unduh format contoh</a>
-              <button class="btn" type="button" id="sample-data">Gunakan data contoh</button>
+              <label class="btn primary file-label" role="button" tabindex="0">Pilih file CSV <input id="file-input" type="file" accept=".csv,text/csv" aria-label="Unggah CSV agregat diagnostik"></label>
+              <a class="btn secondary" href="./samples/contoh-data-pengiriman-rme.csv" download>↓ Unduh template CSV</a>
+              <button class="btn" id="sample-data" type="button">Gunakan contoh sintetis</button>
             </div>
             <div id="data-feedback" role="status" aria-live="polite" class="feedback"></div>
           </div>
-          <div class="guidance"><strong>Perlindungan data:</strong> jangan unggah nama pasien, NIK, nomor rekam medis, rincian per pasien, atau data rahasia. File diproses pada browser dan tidak dikirim ke server AISM. Untuk Excel, simpan dahulu sebagai CSV UTF-8.</div>
+          <div class="guidance"><strong>Pengamanan:</strong> unggah hanya agregat; tanpa NIK, nama pasien, nomor rekam medis, ID organisasi atau log mentah. File diproses di browser, tidak diunggah ke server AISM. Episode belum matang, dibatalkan, dan linkage yang belum terverifikasi dipisahkan dari denominator kelengkapan.</div>
+          <details class="method-details"><summary>Bagaimana format dan denominator dihitung?</summary>
+            <p>Satu episode = satu ServiceRequest. Total order = episode eligible matang + belum eligible + dikecualikan + linkage belum terverifikasi.</p>
+            <p>Episode eligible matang = complete core + incomplete with downstream + completed without result + no downstream evidence. Complete strict adalah subset complete core. Kelengkapan core/strict menggunakan seluruh episode eligible matang sebagai denominator.</p>
+            <p>Episode tanpa bukti downstream hanya berarti belum ada bukti pada data yang dianalisis, bukan bukti layanan klinis tidak dilakukan. Definisi pematangan dan kelengkapan harus dipastikan bersama ahli sebelum analisis formal.</p>
+          </details>
           <div id="data-summary" class="hide">
-            <div class="stage-head" style="margin-top:24px;margin-bottom:8px"><div><h3 class="mini-title">Ringkasan data</h3><p id="source-name"></p></div><span class="pill" id="period-range"></span></div>
+            <div class="stage-head section-spaced"><div><h3 class="mini-title">Ringkasan episode</h3><p id="source-name"></p></div><span class="pill" id="period-range"></span></div>
+            <div id="data-gate" role="status" class="feedback"></div>
             <div id="metric-grid" class="metric-grid"></div>
             <h3 class="subheading">Perbandingan per jenis layanan</h3>
-            <div class="table-wrap">
-              <table><thead><tr><th>Layanan</th><th>Eligible</th><th>Terkirim / eligible</th><th>Lengkap / eligible</th><th>Gagal validasi</th></tr></thead><tbody id="service-table"></tbody></table>
-            </div>
-            <p class="helper">Definisi: eligible = episode yang wajib dikirim; terkirim = episode dengan pengiriman berhasil; lengkap = episode dengan komponen data yang disepakati terpenuhi; gagal validasi = episode unik dengan kesalahan validasi. Jumlah gagal validasi bisa tumpang tindih dengan kategori lainnya dan tidak dijumlahkan sebagai episode tambahan.</p>
+            <div class="table-wrap"><table>
+              <thead><tr><th>Layanan</th><th>Eligible matang</th><th>Core / eligible</th><th>Strict / eligible</th><th>Incomplete downstream</th><th>Selesai tanpa hasil</th><th>Tanpa bukti downstream</th></tr></thead>
+              <tbody id="service-table"></tbody>
+            </table></div>
+            <h3 class="subheading">Tren kelengkapan bulanan</h3>
+            <p class="helper">Pola berdasarkan selisih awal–akhir dan fluktuasi; ambang bentuk pola 5/10 poin persentase hanya eksploratif, bukan target kinerja.</p>
+            <div id="trend-panels" class="trend-grid"></div>
+            <h3 class="subheading">Catatan kualitas pengamatan</h3>
+            <div id="quality-note" class="quality-note"></div>
           </div>
-          <div class="actions"><span class="progress">Langkah 1 dari 3</span><button class="btn primary" type="button" id="next-to-assessment" disabled>Lanjut ke assessment →</button></div>
+          <div class="actions"><span class="progress">Langkah 1 dari 3</span><button class="btn primary" id="next-to-assessment" type="button" disabled>Lanjut ke assessment →</button></div>
         </div>
         <div class="stage" id="stage-assessment">
-          <div class="stage-head">
-            <div><span class="stage-tag">TAHAP 02 / KONDISI OPERASIONAL</span><h2 id="assessment-title">Assessment dasar</h2><p id="assessment-desc">Jawab sesuai kondisi nyata. Jawaban yang belum diketahui boleh dilewati.</p></div>
-            <span class="pill" id="assess-progress">Dasar 0/6</span>
-          </div>
-          <div class="assess-note">Pertanyaan ini bukan audit kepatuhan. Jawaban digunakan untuk memilih penelusuran lanjutan dan menjelaskan hipotesis tindakan. Tidak ada nilai kelulusan.</div>
-          <div id="base-block">
-            <h3 class="mini-title">A. Kondisi dasar</h3><p class="mini-desc">Enam pertanyaan singkat tentang pemantauan, mutu kode, SDM, eskalasi, perubahan sistem, dan dukungan pengelola.</p>
-            <div id="base-questions"></div>
-          </div>
-          <div id="deep-block" class="hide">
-            <h3 class="mini-title">B. Pendalaman sesuai hasil</h3>
-            <p class="mini-desc">Tidak semua pertanyaan muncul. Sistem memilih yang relevan berdasarkan indikator dan jawaban tahap A. <span id="deep-count"></span></p>
-            <div id="deep-questions"></div>
-          </div>
+          <div class="stage-head"><div><span class="stage-tag">TAHAP 02 / KONTEXT ORGANISASI</span><h2 id="assessment-title">Assessment dasar</h2><p id="assessment-desc">Jawab sesuai kondisi aktual. Pilih Belum tahu jika log atau bukti tidak tersedia.</p></div><span class="pill" id="assess-progress">Dasar 0/6</span></div>
+          <div class="assess-note">Jawaban dipakai untuk membedakan mekanisme penyebab yang mungkin terjadi. Tidak ada skor kelulusan dan tidak ada diagnosis kausal otomatis.</div>
+          <div id="base-block"><h3 class="mini-title">A. Kondisi operasional dasar</h3><p class="mini-desc">Pemantauan, mapping, kapasitas PIC, eskalasi, perubahan sistem, dan tindak lanjut pengelola.</p><div id="base-questions"></div></div>
+          <div id="deep-block" class="hide"><h3 class="mini-title">B. Pertanyaan pendalaman sesuai data</h3><p class="mini-desc">Pertanyaan yang muncul dipilih dari temuan kelengkapan, layanan, dan jawaban tahap dasar. <span id="deep-count"></span></p><div id="deep-questions"></div></div>
           <div class="actions">
             <button class="btn" id="back-to-data" type="button">← Kembali ke data</button>
             <button class="btn primary" id="to-deep" type="button">Lanjut ke pendalaman →</button>
@@ -93,23 +84,17 @@
           </div>
         </div>
         <div class="stage" id="stage-results">
-          <div class="stage-head">
-            <div><span class="stage-tag">TAHAP 03 / HASIL</span><h2>Prioritas tindakan untuk ditinjau</h2><p>Urutan ditentukan dengan aturan awal yang transparan dari data dan assessment; bukan estimasi besarnya dampak atau pembuktian hubungan sebab-akibat.</p></div>
-            <span class="pill" id="result-data-meta"></span>
-          </div>
+          <div class="stage-head"><div><span class="stage-tag">TAHAP 03 / DECISION SUPPORT</span><h2>Opsi prioritas dan dasar keputusannya</h2><p>Opsi ditentukan berdasarkan bukti episode, konteks fasyankes, dan hipotesis CLD. Belum ada bukti dampak terukur atau peringkat efektivitas antarintervensi.</p></div><span class="pill" id="result-data-meta"></span></div>
           <div class="scorecard" id="result-summary"></div>
           <div id="recommendations" class="result-list"></div>
           <div id="more-recommendations"></div>
-          <div class="guidance"><strong>Dasar draf CLD:</strong> R1 pemantauan dan pembelajaran; R2 penumpukan masalah; R3 kode dan pekerjaan ulang; R4 manfaat data dan dukungan; R5 beban kerja; B1 dorongan kepatuhan; B2 perubahan sistem; B3 eskalasi masalah. Mekanisme ini adalah hipotesis hasil sintesis awal wawancara/GMB yang masih memerlukan member checking, validasi, dan kalibrasi. Ambang 90% dan 5% hanya nilai demonstrasi, bukan target regulasi.</div>
-          <div class="actions">
-            <button class="btn" type="button" id="edit-assessment">← Perbaiki assessment</button>
-            <div style="display:flex;gap:9px;flex-wrap:wrap"><button class="btn secondary" type="button" id="download-report">↓ Unduh ringkasan JSON</button><button class="btn primary" type="button" id="print-report">Cetak / simpan PDF</button></div>
-          </div>
+          <div class="guidance"><strong>Arti status:</strong> HOLD = data belum cukup valid; INVESTIGATE = mekanisme belum terbukti; RECOMMEND = kandidat tindakan berbasis bukti awal; REVIEW = memerlukan pertimbangan/izin pengelola; VERIFY = periksa outcome setelah tindakan. Keterkaitan CLD R1–R5/B1–B3 masih kondisional, memerlukan validasi lanjutan, dan bukan klaim kausal.</div>
+          <div class="actions"><button class="btn" id="edit-assessment" type="button">← Perbaiki assessment</button><div class="button-row"><button class="btn secondary" id="download-report" type="button">↓ Ekspor keputusan JSON</button><button class="btn primary" id="print-report" type="button">Cetak / simpan PDF</button></div></div>
         </div>
       </section>
     </div>
   </main>
-  <footer class="footer"><div class="shell"><span>AISM Lite · Demonstrator penelitian, bukan produk klinis atau sistem penilaian resmi.</span><span>Data diproses lokal · <a href="./legacy.html">Lab eksperimen</a> · <a href="./literature.html">Literatur</a></span></div></footer>
-  <script src="./simple.js" defer></script>
+  <footer class="footer"><div class="shell"><span>AISM Lite · Prototipe penelitian (bukan alat klinis atau audit resmi).</span><span>Pemrosesan lokal · <a href="./legacy.html">Lab eksperimen</a> · <a href="./literature.html">Literatur</a></span></div></footer>
+  <script type="module" src="./simple.js"></script>
 </body>
 </html>
