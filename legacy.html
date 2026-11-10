@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0B1829">
+  <meta name="description" content="AISM Lab v0.3: bangun variabel, hipotesis mekanisme, persamaan dan simulasi intervensi secara transparan.">
+  <title>AISM Lab v0.3 — Explainable Intervention Decision Lab</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./mobile.css">
+</head>
+<body>
+  <div class="notice"><span class="live-dot"></span> RESEARCH DEMONSTRATOR <span class="notice-right">DATA SINTETIS · MODEL BELUM TERVALIDASI</span></div>
+  <header class="header">
+    <div class="shell head-inner">
+      <a class="identity" href="./"><span class="mark">A<span>.</span></span><span class="brand-copy"><strong>AISM Lab</strong><small>ADAPTIVE INTERVENTION SELECTION METHOD</small></span></a>
+      <nav class="head-nav"><a href="#builder">Model Builder</a><a href="./literature.html">Literature Review</a><a href="#method">Metodologi</a><a href="https://github.com/bofandra/aism" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
+      <span class="version">v0.3 · ADAPTIVE</span>
+    </div>
+  </header>
+  <nav class="page-tabs" aria-label="Halaman AISM Lab"><div class="shell page-tabs-inner"><a class="page-tab current" aria-current="page" href="./#builder">◈ &nbsp; Model Builder</a><a class="page-tab" href="./literature.html">▦ &nbsp; Literature Review</a></div></nav>
+  <main>
+    <section class="intro shell">
+      <div class="intro-text"><span class="eyebrow">METHOD CONSTRUCTION & SIMULATION LAB</span><h1>Dari masalah, menjadi <em>model yang dapat dijelaskan.</em></h1><p>Bangun variabel, hipotesis dan persamaan; diagnosis gap; kaji batas keputusan; bandingkan simulasi dengan hasil aktual. Satu metode, beberapa domain permasalahan.</p><a class="btn btn-primary mobile-start" href="#builder">Mulai simulasi →</a><a class="btn btn-outline mobile-start" href="./literature.html" style="margin-left:8px">Review novelty ↗</a></div>
+      <div class="intro-metrics"><div><strong>06</strong><span>TAHAP INTERAKTIF</span></div><div><strong>03</strong><span>DOMAIN CONTOH</span></div><div><strong>01</strong><span>MESIN MODEL</span></div></div>
+    </section>
+    <section class="lab-section" id="builder">
+      <div class="shell">
+        <div class="lab-toolbar">
+          <div class="choose"><label for="domain">PILIH STUDI KASUS</label><select id="domain" aria-label="Pilih domain contoh"><option value="satusehat">SATUSEHAT · Diagnostik</option><option value="education">Pendidikan · Retensi Mahasiswa</option><option value="logistics">Logistik · Pengiriman Tepat Waktu</option></select></div>
+          <div class="mode-switch"><span>BUILDER MODE</span><div class="segmented"><button id="guided" class="selected" type="button" aria-pressed="true">Guided</button><button id="advanced" type="button" aria-pressed="false">Advanced</button></div></div>
+          <div class="toolbar-actions"><button id="reset" class="btn btn-outline" type="button">↺ Reset kasus</button><button id="export" class="btn btn-primary" type="button">Ekspor model ↓</button></div>
+        </div>
+        <div class="question-strip"><span class="question-index">RESEARCH QUESTION</span><strong id="question"></strong><span class="question-meta" id="case-sector"></span></div>
+        <div class="lab-layout">
+          <aside class="stepper panel" aria-label="Tahap AISM">
+            <span class="section-kicker">WORKFLOW / v0.3</span>
+            <h2>Bangun model</h2>
+            <p>Ikuti proses dari variabel sampai model yang dapat dihitung.</p>
+            <div class="mobile-step-progress" id="mobile-step-progress" aria-live="polite">Tahap 1 dari 6</div>
+            <div class="steps">
+              <button type="button" data-step="variables" class="active"><span>01</span><span><strong>Variabel</strong><small>Apa yang diukur?</small></span></button>
+              <button type="button" data-step="mechanisms"><span>02</span><span><strong>Mekanisme</strong><small>Bagaimana saling terkait?</small></span></button>
+              <button type="button" data-step="formulas"><span>03</span><span><strong>Formula Lab</strong><small>Mengapa rumus demikian?</small></span></button>
+              <button type="button" data-step="diagnosis"><span>04</span><span><strong>Diagnosis</strong><small>Mana gap berbukti?</small></span></button>
+              <button type="button" data-step="interventions"><span>05</span><span><strong>Keputusan</strong><small>Mana yang layak dikaji?</small></span></button>
+              <button type="button" data-step="evaluation"><span>06</span><span><strong>Adaptasi</strong><small>Belajar dari hasil?</small></span></button>
+            </div>
+            <div class="side-promo"><span>METODE LENGKAP</span><p>Problem Definition → Variables → Mechanisms → Formulation → Diagnosis → Decision → Adaptive Evaluation</p><small>Problem Definition melekat pada studi kasus; Simulation terintegrasi dalam tahap keputusan pada v0.3.</small></div>
+          </aside>
+          <section class="main-panel panel" aria-live="polite">
+            <div class="workspace-head"><span class="section-kicker" id="step-tag">STEP 01 / VARIABLE IDENTIFICATION</span><h2 id="step-title">Variabel apa yang membentuk masalah?</h2><p id="step-description"></p></div>
+            <div id="work-area"></div>
+            <div class="stage-nav"><button id="prev" class="btn btn-outline" type="button">← Sebelumnya</button><button id="next" class="btn btn-primary" type="button">Lanjutkan →</button></div>
+          </section>
+          <button type="button" id="inspector-backdrop" class="inspector-backdrop" aria-label="Tutup panel penjelasan" tabindex="-1"></button>
+          <aside class="inspector panel" id="inspector" aria-label="Penjelasan metodologis" tabindex="-1">
+            <div class="inspector-head"><button type="button" id="inspector-close" class="inspector-close" aria-label="Tutup penjelasan">✕ <span>Tutup</span></button><span class="section-kicker">METHOD INSPECTOR</span><h2 id="inspector-heading">Explain This Model <span>✳</span></h2><p>Klik suatu variabel, hubungan atau rumus untuk menelusuri dasarnya.</p></div>
+            <div id="inspector-body"></div>
+          </aside>
+        </div>
+        <div id="alerts" aria-live="polite"></div>
+        <div class="bottom-strip"><div><span class="shield">◇</span><strong>Scientific honesty by design.</strong> Tidak ada rekomendasi klinis, akses data pasien, atau klaim kausal otomatis.</div><a href="#method">Lihat prinsip metodologi ↗</a></div>
+      </div>
+    </section>
+    <section id="method" class="method shell">
+      <div class="section-heading"><span class="eyebrow dark">HOW THE METHOD WORKS</span><h2>Model terbuka. Asumsi dapat dilacak.</h2><p>Prosedur AISM berlaku lintas domain. Persamaan, parameter dan dampak intervensi tetap harus dibentuk sesuai konteks dan divalidasi.</p></div>
+      <div class="method-grid">
+        <article><span>01 / DEFINE</span><h3>Definisikan outcome</h3><p>Populasi, satuan dan batas sistem harus jelas sebelum membuat skor atau persamaan.</p></article>
+        <article><span>02 / EXPLAIN</span><h3>Bangun hipotesis</h3><p>Hubungan variabel disertai justifikasi, status bukti, dan kemungkinan mekanisme alternatif.</p></article>
+        <article><span>03 / FORMULATE</span><h3>Uji persamaan</h3><p>Parser aman, pemeriksaan satuan dan hasil numerik memberi fondasi untuk evaluasi lebih lanjut.</p></article>
+        <article><span>04 / LEARN</span><h3>Evaluasi dan adaptasi</h3><p>Keputusan tetap ditinjau manusia; hasil aktual dapat dicatat, lalu parameter diperbarui hanya dengan persetujuan eksplisit.</p></article>
+      </div>
+    </section>
+  </main>
+  <footer><div class="shell"><strong>AISM Lab v0.3</strong><span>Design Science Research · Systems Thinking · Synthetic-only prototype · 2026</span><span>© Research demonstrator · No patient data</span></div></footer>
+  <script type="module" src="./src/ui.mjs"></script>
+  <script>if(location.hash==="#literature")location.replace("./literature.html");</script>
+</body>
+</html>
