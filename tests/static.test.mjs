@@ -5,21 +5,23 @@ import {readFileSync,existsSync} from "node:fs";
 const lite=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const legacy=readFileSync(new URL("../legacy.html",import.meta.url),"utf8");
 const liteScript=readFileSync(new URL("../simple.js",import.meta.url),"utf8");
+const episode=readFileSync(new URL("../src/episode-lite.mjs",import.meta.url),"utf8");
 const ui=readFileSync(new URL("../src/ui.mjs",import.meta.url),"utf8");
 const literature=readFileSync(new URL("../literature.html",import.meta.url),"utf8");
 
 test("AISM Lite is the default homepage with a working static entrypoint",()=>{
-  assert.match(lite,/<script src="\.\/simple\.js" defer><\/script>/);
+  assert.match(lite,/<script type="module" src="\.\/simple\.js"><\/script>/);
   assert.match(lite,/href="\.\/simple\.css"/);
   assert.match(lite,/id="stage-data"/);
   assert.match(lite,/id="stage-assessment"/);
   assert.match(lite,/id="stage-results"/);
   assert.match(lite,/href="\.\/samples\/contoh-data-pengiriman-rme\.csv"/);
-  for(const path of ["../simple.js","../simple.css","../samples/contoh-data-pengiriman-rme.csv"]) {
+  for(const path of ["../simple.js","../simple.css","../src/episode-lite.mjs","../samples/contoh-data-pengiriman-rme.csv"]) {
     assert.ok(existsSync(new URL(path,import.meta.url)),path);
   }
   assert.match(liteScript,/function renderRecommendations\(/);
-  assert.match(liteScript,/function parseData\(/);
+  assert.match(episode,/function parseAggregateCsv\(/);
+  assert.match(episode,/function decisionOptions\(/);
 });
 
 test("legacy research lab keeps the six-stage ES module builder",()=>{
@@ -55,7 +57,7 @@ test("all direct Lite DOM IDs exist in the Lite document",()=>{
 
 test("scientific disclaimers are available without JavaScript",()=>{
   assert.match(lite,/ATURAN PRIORITAS &amp; CLD BELUM TERVALIDASI/);
-  assert.match(lite,/bukan keputusan otomatis/);
+  assert.match(lite,/bukan bukti pemeriksaan klinis tidak dilakukan/);
   assert.match(legacy,/DATA SINTETIS/);
   assert.match(legacy,/Scientific honesty by design/);
 });
